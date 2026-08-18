@@ -50,10 +50,84 @@
     "management": "System Management"
   },
   "dashboard": {
-    "teacherWelcome": "Your assigned indicators will appear here (coming in the next phase)",
-    "qaWelcome": "Overview dashboard and review queue coming in the next phase",
+    "qaWelcome": "Evidence review overview",
     "assessorWelcome": "Read-only evidence folder coming in the next phase",
     "execWelcome": "Executive readiness dashboard coming in the next phase",
-    "standardsOverview": "Standards & indicators overview (seed data)"
+    "standardsOverview": "Standards & indicators overview (seed data)",
+    "pendingReview": "Items pending review",
+    "goToReviewQueue": "Go to review queue"
+  },
+  "status": {
+    "todo": "Not started",
+    "progress": "In progress",
+    "review": "Under review",
+    "approved": "Approved",
+    "revise": "Needs revision"
+  },
+  "myWork": {
+    "title": "My Work",
+    "subtitle": "Indicators assigned to you",
+    "needsRevision": "Items needing revision",
+    "noNeedsRevision": "Nothing needs revision right now",
+    "noAssignments": "No indicators assigned yet",
+    "progressLabel": "Progress",
+    "viewDetail": "View detail"
+  },
+  "indicatorDetail": {
+    "back": "Back to My Work",
+    "evidenceChecklist": "Evidence checklist",
+    "attachments": "Attachments",
+    "uploadFile": "Upload file",
+    "attachLink": "Attach Google Drive link",
+    "driveLinkUrl": "Google Drive link",
+    "driveLinkHint": "Recommend setting sharing to \"Anyone with the link (Viewer)\"",
+    "driveLinkName": "Item name (optional)",
+    "attach": "Attach",
+    "open": "Open",
+    "delete": "Delete",
+    "submitForReview": "Submit for review",
+    "submitRequiresAttachment": "At least one attachment is required before submitting",
+    "reviewerNote": "Reviewer's note",
+    "uploading": "Uploading...",
+    "collectionMethods": "Collection methods",
+    "dataSources": "Data sources",
+    "owner": "Responsible unit",
+    "assignedTo": "Assigned to",
+    "uploadedBy": "Uploaded by"
+  },
+  "reviewQueue": {
+    "title": "Review Queue",
+    "empty": "No items pending review",
+    "approve": "Approve",
+    "revise": "Send back for revision",
+    "reviseNotePlaceholder": "Enter feedback for revision",
+    "submittedBy": "Submitted by",
+    "confirmRevise": "Send back"
+  },
+  "management": {
+    "users": "User Management",
+    "indicators": "Indicator Management",
+    "createUser": "Add new user",
+    "name": "Full name",
+    "email": "Email",
+    "role": "Role",
+    "department": "Department",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "tempPasswordNotice": "Temporary password for the new user (shown once)",
+    "assignedTeachers": "Assigned to",
+    "addAssignment": "Add assignment",
+    "selectUser": "Select user",
+    "removeAssignment": "Remove"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No new notifications",
+    "approve": "Evidence was approved",
+    "revise": "Evidence was sent back for revision",
+    "submit": "New evidence submitted for review"
   }
 }

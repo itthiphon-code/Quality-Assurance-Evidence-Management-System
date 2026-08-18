@@ -13,7 +13,7 @@ export class InvalidCredentialsError extends Error {
 
 export async function verifyCredentials(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) throw new InvalidCredentialsError();
+  if (!user || !user.isActive) throw new InvalidCredentialsError();
 
   const ok = await bcrypt.compare(password, user.passwordHash);
   if (!ok) throw new InvalidCredentialsError();

@@ -1,7 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { apiClient } from "../lib/apiClient";
 import { useAuth } from "../features/auth/authContext";
+
+interface ReviewQueueItemDto {
+  id: string;
+}
 
 interface IndicatorDto {
   id: string;
@@ -30,7 +35,13 @@ export function DashboardPage() {
     queryFn: async () => (await apiClient.get<StandardDto[]>("/standards")).data,
   });
 
-  const welcomeKey = user ? (`dashboard.${user.role}Welcome` as const) : "dashboard.teacherWelcome";
+  const { data: reviewQueue } = useQuery({
+    queryKey: ["evidence", "review-queue"],
+    queryFn: async () => (await apiClient.get<ReviewQueueItemDto[]>("/evidence/review-queue")).data,
+    enabled: user?.role === "qa",
+  });
+
+  const welcomeKey = `dashboard.${user?.role ?? "qa"}Welcome` as const;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
@@ -38,6 +49,21 @@ export function DashboardPage() {
         {t("common.welcome")}, {user?.name}
       </h1>
       <p className="mt-1 text-sm text-muted">{t(welcomeKey)}</p>
+
+      {user?.role === "qa" && (
+        <Link
+          to="/review-queue"
+          className="mt-4 flex items-center justify-between rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors hover:bg-surface-alt"
+        >
+          <span className="text-sm font-medium text-ink">{t("dashboard.pendingReview")}</span>
+          <span className="flex items-center gap-2">
+            <span className="rounded-full bg-primary-tint px-2.5 py-0.5 text-sm font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
+              {reviewQueue?.length ?? 0}
+            </span>
+            <span className="text-sm text-primary-700 underline dark:text-primary">{t("dashboard.goToReviewQueue")}</span>
+          </span>
+        </Link>
+      )}
 
       <section className="mt-6">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">

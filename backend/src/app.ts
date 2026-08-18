@@ -5,6 +5,11 @@ import { env } from "./config/env";
 import { errorHandler } from "./middleware/errorHandler";
 import { authRouter } from "./modules/auth/auth.controller";
 import { standardsRouter } from "./modules/standards/standards.controller";
+import { usersRouter } from "./modules/users/users.controller";
+import { indicatorsRouter } from "./modules/indicators/indicators.controller";
+import { evidenceRouter } from "./modules/evidence/evidence.controller";
+import { attachmentsRouter } from "./modules/attachments/attachments.controller";
+import { notificationsRouter } from "./modules/notifications/notifications.controller";
 
 export const app = express();
 
@@ -18,6 +23,11 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/standards", standardsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/indicators", indicatorsRouter);
+app.use("/api/evidence", evidenceRouter);
+app.use("/api/attachments", attachmentsRouter);
+app.use("/api/notifications", notificationsRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: { message: "Not found" } });

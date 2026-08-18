@@ -1,0 +1,163 @@
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { apiClient } from "../../lib/apiClient";
+
+interface AssignmentDto {
+  user: { id: string; name: string; email: string };
+}
+
+interface IndicatorDto {
+  id: string;
+  code: string;
+  nameTh: string;
+  nameEn: string;
+  visitMethod: string;
+  ownerDepartment: string | null;
+  standard: { code: string };
+  assignments: AssignmentDto[];
+}
+
+interface TeacherDto {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function IndicatorRow({ indicator, teachers }: { indicator: IndicatorDto; teachers: TeacherDto[] }) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [nameTh, setNameTh] = useState(indicator.nameTh);
+  const [nameEn, setNameEn] = useState(indicator.nameEn);
+  const [selectedTeacher, setSelectedTeacher] = useState("");
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["indicators", "all"] });
+
+  const saveNames = useMutation({
+    mutationFn: () => apiClient.patch(`/indicators/${indicator.id}`, { nameTh, nameEn }),
+    onSuccess: invalidate,
+  });
+
+  const assign = useMutation({
+    mutationFn: (userId: string) => apiClient.post(`/indicators/${indicator.id}/assignments`, { userId }),
+    onSuccess: () => {
+      setSelectedTeacher("");
+      invalidate();
+    },
+  });
+
+  const unassign = useMutation({
+    mutationFn: (userId: string) => apiClient.delete(`/indicators/${indicator.id}/assignments/${userId}`),
+    onSuccess: invalidate,
+  });
+
+  const assignedIds = new Set(indicator.assignments.map((a) => a.user.id));
+  const availableTeachers = teachers.filter((tch) => !assignedIds.has(tch.id));
+  const dirty = nameTh !== indicator.nameTh || nameEn !== indicator.nameEn;
+
+  return (
+    <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
+      <span className="text-xs font-medium text-muted">
+        {indicator.standard.code} · {indicator.code}
+      </span>
+      <div className="mt-2 grid gap-2 sm:grid-cols-2">
+        <input
+          value={nameTh}
+          onChange={(e) => setNameTh(e.target.value)}
+          className="rounded-md border border-border bg-base px-2 py-1.5 text-sm outline-none focus:border-primary"
+        />
+        <input
+          value={nameEn}
+          onChange={(e) => setNameEn(e.target.value)}
+          className="rounded-md border border-border bg-base px-2 py-1.5 text-sm outline-none focus:border-primary"
+        />
+      </div>
+      {dirty && (
+        <button
+          type="button"
+          onClick={() => saveNames.mutate()}
+          disabled={saveNames.isPending}
+          className="mt-2 rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-tint hover:bg-primary-700"
+        >
+          {t("common.save")}
+        </button>
+      )}
+
+      <div className="mt-3">
+        <p className="mb-1 text-xs font-medium text-muted">{t("management.assignedTeachers")}</p>
+        <div className="flex flex-wrap gap-2">
+          {indicator.assignments.map((a) => (
+            <span
+              key={a.user.id}
+              className="inline-flex items-center gap-1.5 rounded-full bg-surface-alt px-2.5 py-1 text-xs"
+            >
+              {a.user.name}
+              <button
+                type="button"
+                onClick={() => unassign.mutate(a.user.id)}
+                className="text-status-danger"
+                aria-label={t("management.removeAssignment")}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+          {indicator.assignments.length === 0 && <span className="text-xs text-muted">—</span>}
+        </div>
+        <div className="mt-2 flex gap-2">
+          <select
+            value={selectedTeacher}
+            onChange={(e) => setSelectedTeacher(e.target.value)}
+            className="rounded-md border border-border bg-base px-2 py-1 text-xs outline-none focus:border-primary"
+          >
+            <option value="">{t("management.selectUser")}</option>
+            {availableTeachers.map((tch) => (
+              <option key={tch.id} value={tch.id}>
+                {tch.name}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={!selectedTeacher || assign.isPending}
+            onClick={() => assign.mutate(selectedTeacher)}
+            className="rounded-md border border-primary px-2 py-1 text-xs font-medium text-primary-700 disabled:opacity-50 dark:text-primary"
+          >
+            {t("management.addAssignment")}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function IndicatorsManagementPage() {
+  const { t } = useTranslation();
+
+  const { data: indicators, isLoading, isError } = useQuery({
+    queryKey: ["indicators", "all"],
+    queryFn: async () => (await apiClient.get<IndicatorDto[]>("/indicators")).data,
+  });
+
+  const { data: teachers } = useQuery({
+    queryKey: ["users", "teacher"],
+    queryFn: async () => (await apiClient.get<TeacherDto[]>("/users?role=teacher")).data,
+  });
+
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+      <h1 className="text-xl font-semibold text-ink">{t("management.indicators")}</h1>
+
+      {isLoading && <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>}
+      {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
+
+      {indicators && (
+        <div className="mt-4 space-y-3">
+          {indicators.map((ind) => (
+            <IndicatorRow key={ind.id} indicator={ind} teachers={teachers ?? []} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

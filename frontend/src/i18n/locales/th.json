@@ -50,10 +50,84 @@
     "management": "จัดการระบบ"
   },
   "dashboard": {
-    "teacherWelcome": "หน้างานของฉันจะแสดงตัวชี้วัดที่ท่านรับผิดชอบ (มาในเฟสถัดไป)",
-    "qaWelcome": "แดชบอร์ดภาพรวมและคิวตรวจสอบจะมาในเฟสถัดไป",
+    "qaWelcome": "ภาพรวมการตรวจสอบหลักฐาน",
     "assessorWelcome": "แฟ้มตรวจเยี่ยมแบบอ่านอย่างเดียวจะมาในเฟสถัดไป",
     "execWelcome": "แดชบอร์ดความพร้อมสำหรับผู้บริหารจะมาในเฟสถัดไป",
-    "standardsOverview": "ภาพรวมมาตรฐานและตัวชี้วัด (ข้อมูลตั้งต้น)"
+    "standardsOverview": "ภาพรวมมาตรฐานและตัวชี้วัด (ข้อมูลตั้งต้น)",
+    "pendingReview": "รายการรอตรวจสอบ",
+    "goToReviewQueue": "ไปที่คิวตรวจสอบ"
+  },
+  "status": {
+    "todo": "ยังไม่ดำเนินการ",
+    "progress": "กำลังรวบรวม",
+    "review": "รอตรวจ",
+    "approved": "ผ่านการตรวจสอบ",
+    "revise": "ต้องแก้ไข"
+  },
+  "myWork": {
+    "title": "งานของฉัน",
+    "subtitle": "ตัวชี้วัดที่ท่านได้รับมอบหมาย",
+    "needsRevision": "รายการที่ต้องแก้ไข",
+    "noNeedsRevision": "ไม่มีรายการที่ต้องแก้ไขในขณะนี้",
+    "noAssignments": "ยังไม่มีตัวชี้วัดที่ได้รับมอบหมาย",
+    "progressLabel": "ความคืบหน้า",
+    "viewDetail": "ดูรายละเอียด"
+  },
+  "indicatorDetail": {
+    "back": "กลับไปหน้างานของฉัน",
+    "evidenceChecklist": "รายการหลักฐาน",
+    "attachments": "เอกสารแนบ",
+    "uploadFile": "อัปโหลดไฟล์",
+    "attachLink": "แนบลิงก์ Google Drive",
+    "driveLinkUrl": "ลิงก์ Google Drive",
+    "driveLinkHint": "แนะนำตั้งสิทธิ์แชร์เป็น \"ผู้ที่มีลิงก์เปิดดูได้ (Viewer)\"",
+    "driveLinkName": "ชื่อรายการ (ไม่บังคับ)",
+    "attach": "แนบ",
+    "open": "เปิด",
+    "delete": "ลบ",
+    "submitForReview": "ส่งเข้าตรวจสอบ",
+    "submitRequiresAttachment": "ต้องแนบหลักฐานอย่างน้อย 1 รายการก่อนส่งตรวจ",
+    "reviewerNote": "ข้อเสนอแนะจากผู้ตรวจ",
+    "uploading": "กำลังอัปโหลด...",
+    "collectionMethods": "วิธีเก็บข้อมูล",
+    "dataSources": "แหล่งข้อมูล",
+    "owner": "หน่วยงานรับผิดชอบ",
+    "assignedTo": "ผู้รับผิดชอบ",
+    "uploadedBy": "อัปโหลดโดย"
+  },
+  "reviewQueue": {
+    "title": "คิวตรวจสอบ",
+    "empty": "ไม่มีรายการรอตรวจสอบ",
+    "approve": "อนุมัติ",
+    "revise": "ส่งกลับแก้ไข",
+    "reviseNotePlaceholder": "ระบุข้อเสนอแนะสำหรับการแก้ไข",
+    "submittedBy": "ส่งโดย",
+    "confirmRevise": "ส่งกลับแก้ไข"
+  },
+  "management": {
+    "users": "จัดการผู้ใช้",
+    "indicators": "จัดการตัวชี้วัด",
+    "createUser": "เพิ่มผู้ใช้ใหม่",
+    "name": "ชื่อ-นามสกุล",
+    "email": "อีเมล",
+    "role": "บทบาท",
+    "department": "หน่วยงาน",
+    "status": "สถานะ",
+    "active": "ใช้งานอยู่",
+    "inactive": "ปิดใช้งาน",
+    "activate": "เปิดใช้งาน",
+    "deactivate": "ปิดใช้งาน",
+    "tempPasswordNotice": "รหัสผ่านชั่วคราวสำหรับผู้ใช้ใหม่ (แสดงเพียงครั้งเดียว)",
+    "assignedTeachers": "ผู้รับผิดชอบ",
+    "addAssignment": "เพิ่มผู้รับผิดชอบ",
+    "selectUser": "เลือกผู้ใช้",
+    "removeAssignment": "นำออก"
+  },
+  "notifications": {
+    "title": "การแจ้งเตือน",
+    "empty": "ไม่มีการแจ้งเตือนใหม่",
+    "approve": "หลักฐานได้รับการอนุมัติ",
+    "revise": "หลักฐานถูกส่งกลับให้แก้ไข",
+    "submit": "มีการส่งหลักฐานเข้าตรวจสอบใหม่"
   }
 }

@@ -1,10 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
+import { MulterError } from "multer";
 import { ZodError } from "zod";
 
 // Error handler กลาง — ต้องประกาศเป็นตัวสุดท้ายใน middleware chain
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof ZodError) {
     return res.status(400).json({ error: { message: "Validation failed", issues: err.issues } });
+  }
+
+  if (err instanceof MulterError) {
+    return res.status(400).json({ error: { message: `Upload error: ${err.message}` } });
+  }
+  if (err instanceof Error && err.message === "UNSUPPORTED_FILE_TYPE") {
+    return res.status(400).json({ error: { message: "Unsupported file type" } });
   }
 
   console.error(err);

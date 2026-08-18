@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../features/auth/authContext";
 import { LangToggle } from "./LangToggle";
+import { NotificationBell } from "./NotificationBell";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
@@ -22,6 +23,7 @@ export function Header() {
       <div className="flex items-center gap-2 sm:gap-3">
         <LangToggle />
         <ThemeToggle />
+        <NotificationBell />
         {user && (
           <div className="ml-1 flex items-center gap-2 border-l border-border pl-2 sm:pl-3">
             <div className="hidden text-right leading-tight sm:block">
