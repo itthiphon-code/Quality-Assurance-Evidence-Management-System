@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 
 type Theme = "light" | "dark";
 
@@ -20,7 +20,10 @@ function getInitialTheme(): Theme {
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect): layout effects across the tree all run before any
+  // passive effect fires, so components reading resolved CSS var values on theme change
+  // (e.g. useStatusColors for Recharts) are guaranteed to see the "dark" class already applied.
+  useLayoutEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);

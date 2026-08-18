@@ -51,11 +51,18 @@
   },
   "dashboard": {
     "qaWelcome": "Evidence review overview",
-    "assessorWelcome": "Read-only evidence folder coming in the next phase",
-    "execWelcome": "Executive readiness dashboard coming in the next phase",
+    "execWelcome": "Overall audit-readiness overview",
     "standardsOverview": "Standards & indicators overview (seed data)",
     "pendingReview": "Items pending review",
-    "goToReviewQueue": "Go to review queue"
+    "goToReviewQueue": "Go to review queue",
+    "statusByStandard": "Evidence status by standard",
+    "statusOverall": "Overall status breakdown",
+    "readinessTable": "Indicator readiness",
+    "overallReadiness": "Overall readiness",
+    "riskList": "At-risk items",
+    "noRisk": "No at-risk items right now",
+    "riskReasonRevise": "Has evidence sent back for revision",
+    "riskReasonNoProgress": "No evidence approved yet"
   },
   "status": {
     "todo": "Not started",
@@ -129,5 +136,17 @@
     "approve": "Evidence was approved",
     "revise": "Evidence was sent back for revision",
     "submit": "New evidence submitted for review"
+  },
+  "assessorFolder": {
+    "title": "Evidence Folder",
+    "subtitle": "Approved evidence, grouped by standard and indicator",
+    "empty": "No approved evidence in this indicator yet",
+    "visitMethod": "Visit method"
+  },
+  "readinessTable": {
+    "code": "Code",
+    "name": "Indicator",
+    "progress": "Progress",
+    "needsRevision": "Needs revision"
   }
 }

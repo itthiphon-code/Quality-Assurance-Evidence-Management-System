@@ -3,102 +3,75 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { apiClient } from "../lib/apiClient";
 import { useAuth } from "../features/auth/authContext";
+import { useDashboardSummary } from "../lib/useDashboardSummary";
+import { StatusDonutChart } from "../components/charts/StatusDonutChart";
+import { StandardProgressChart } from "../components/charts/StandardProgressChart";
+import { IndicatorReadinessTable } from "../components/IndicatorReadinessTable";
 
 interface ReviewQueueItemDto {
   id: string;
 }
 
-interface IndicatorDto {
-  id: string;
-  code: string;
-  nameTh: string;
-  nameEn: string;
-  visitMethod: string;
-  _count: { evidenceItems: number };
-}
-
-interface StandardDto {
-  id: string;
-  code: string;
-  nameTh: string;
-  nameEn: string;
-  indicators: IndicatorDto[];
-}
-
+// แดชบอร์ดของงานประกันคุณภาพ — ภาพรวมสถานะหลักฐานทั้งระบบ + คิวตรวจสอบ
 export function DashboardPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
-  const isThai = i18n.language?.startsWith("th");
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["standards"],
-    queryFn: async () => (await apiClient.get<StandardDto[]>("/standards")).data,
-  });
 
   const { data: reviewQueue } = useQuery({
     queryKey: ["evidence", "review-queue"],
     queryFn: async () => (await apiClient.get<ReviewQueueItemDto[]>("/evidence/review-queue")).data,
-    enabled: user?.role === "qa",
   });
 
-  const welcomeKey = `dashboard.${user?.role ?? "qa"}Welcome` as const;
+  const { data, isLoading, isError } = useDashboardSummary();
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
       <h1 className="text-xl font-semibold text-ink">
         {t("common.welcome")}, {user?.name}
       </h1>
-      <p className="mt-1 text-sm text-muted">{t(welcomeKey)}</p>
+      <p className="mt-1 text-sm text-muted">{t("dashboard.qaWelcome")}</p>
 
-      {user?.role === "qa" && (
-        <Link
-          to="/review-queue"
-          className="mt-4 flex items-center justify-between rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors hover:bg-surface-alt"
-        >
-          <span className="text-sm font-medium text-ink">{t("dashboard.pendingReview")}</span>
-          <span className="flex items-center gap-2">
-            <span className="rounded-full bg-primary-tint px-2.5 py-0.5 text-sm font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
-              {reviewQueue?.length ?? 0}
-            </span>
-            <span className="text-sm text-primary-700 underline dark:text-primary">{t("dashboard.goToReviewQueue")}</span>
+      <Link
+        to="/review-queue"
+        className="mt-4 flex items-center justify-between rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors hover:bg-surface-alt"
+      >
+        <span className="text-sm font-medium text-ink">{t("dashboard.pendingReview")}</span>
+        <span className="flex items-center gap-2">
+          <span className="rounded-full bg-primary-tint px-2.5 py-0.5 text-sm font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
+            {reviewQueue?.length ?? 0}
           </span>
-        </Link>
-      )}
+          <span className="text-sm text-primary-700 underline dark:text-primary">{t("dashboard.goToReviewQueue")}</span>
+        </span>
+      </Link>
 
-      <section className="mt-6">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-          {t("dashboard.standardsOverview")}
-        </h2>
+      {isLoading && <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>}
+      {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
 
-        {isLoading && <p className="text-sm text-muted">{t("common.loading")}</p>}
-        {isError && <p className="text-sm text-status-danger">{t("common.error")}</p>}
-
-        <div className="space-y-4">
-          {data?.map((standard) => (
-            <div key={standard.id} className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-              <h3 className="font-semibold text-primary-700 dark:text-primary">
-                {standard.code} — {isThai ? standard.nameTh : standard.nameEn}
-              </h3>
-              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                {standard.indicators.map((ind) => (
-                  <li
-                    key={ind.id}
-                    className="flex items-center justify-between rounded-lg bg-surface-alt px-3 py-2 text-sm"
-                  >
-                    <span>
-                      <span className="font-medium">{ind.code}</span>{" "}
-                      {isThai ? ind.nameTh : ind.nameEn}
-                    </span>
-                    <span className="rounded-full bg-primary-tint px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-surface dark:text-primary">
-                      {ind._count.evidenceItems} {t("common.evidenceItems")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+      {data && (
+        <>
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
+                {t("dashboard.statusByStandard")}
+              </h2>
+              <StandardProgressChart data={data.byStandard} />
             </div>
-          ))}
-        </div>
-      </section>
+            <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
+                {t("dashboard.statusOverall")}
+              </h2>
+              <StatusDonutChart counts={data.overall} />
+            </div>
+          </div>
+
+          <section className="mt-6">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+              {t("dashboard.readinessTable")}
+            </h2>
+            <IndicatorReadinessTable data={data.byIndicator} />
+          </section>
+        </>
+      )}
     </div>
   );
 }

@@ -16,6 +16,9 @@
   --status-pending: #2563eb;
   --status-warning: #d97706;
   --status-danger: #dc2626;
+  /* เทากลาง ใช้เฉพาะพื้นที่กว้างในกราฟ (แท่ง/โดนัท) สำหรับสถานะ "ยังไม่ดำเนินการ"
+     แยกจาก --text-muted (โทนน้ำตาลอมแดงตามธีม) เพราะเมื่อขยายใหญ่ในกราฟจะดูเข้ม/สะดุดตาเกินไป */
+  --chart-neutral: #9ca3af;
 
   /* พื้นผิว/ตัวอักษร โหมดสว่าง */
   --bg: #faf7f5;
@@ -39,6 +42,7 @@
   --status-pending: #58a6ff;
   --status-warning: #e3a008;
   --status-danger: #f85149;
+  --chart-neutral: #6b7280;
 
   --bg: #16100f;
   --surface: #211719;

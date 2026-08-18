@@ -10,6 +10,8 @@ import { indicatorsRouter } from "./modules/indicators/indicators.controller";
 import { evidenceRouter } from "./modules/evidence/evidence.controller";
 import { attachmentsRouter } from "./modules/attachments/attachments.controller";
 import { notificationsRouter } from "./modules/notifications/notifications.controller";
+import { assessorRouter } from "./modules/assessor/assessor.controller";
+import { dashboardRouter } from "./modules/dashboard/dashboard.controller";
 
 export const app = express();
 
@@ -28,6 +30,8 @@ app.use("/api/indicators", indicatorsRouter);
 app.use("/api/evidence", evidenceRouter);
 app.use("/api/attachments", attachmentsRouter);
 app.use("/api/notifications", notificationsRouter);
+app.use("/api/assessor", assessorRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: { message: "Not found" } });

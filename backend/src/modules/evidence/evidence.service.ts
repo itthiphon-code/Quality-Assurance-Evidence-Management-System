@@ -15,6 +15,11 @@ export async function canAccessEvidence(userId: string, role: string, indicatorI
   return false;
 }
 
+// ผู้ประเมิน สมศ. เปิดดู (อ่านอย่างเดียว) ได้เฉพาะหลักฐานที่ผ่านการตรวจสอบแล้วเท่านั้น
+export function isApprovedReadableByAssessor(role: string, status: string): boolean {
+  return role === "assessor" && status === "approved";
+}
+
 export const ALLOWED_MIME_TYPES = new Set([
   "application/pdf",
   "application/msword",
