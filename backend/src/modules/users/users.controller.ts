@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { Router } from "express";
 import { z } from "zod";
-import { UserRole } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { prisma } from "../../db/prisma";
 import { authMiddleware } from "../../middleware/auth";
 import { requireRole } from "../../middleware/rbac";
@@ -75,17 +75,46 @@ usersRouter.post("/", async (req, res, next) => {
 
 const updateUserSchema = z.object({
   name: z.string().min(1).optional(),
+  email: z.string().email().optional(),
   role: loginRoleSchema.optional(),
-  department: z.string().min(1).optional(),
+  // ส่งสตริงว่างมาได้ = ล้างค่าหน่วยงาน (เก็บเป็น null)
+  department: z.string().optional(),
 });
 
-// PATCH /api/users/:id — แก้ไขชื่อ/บทบาท/หน่วยงาน
+// PATCH /api/users/:id — แก้ไขชื่อ/อีเมล/บทบาท/หน่วยงาน
 usersRouter.patch("/:id", async (req, res, next) => {
   try {
-    const data = updateUserSchema.parse(req.body);
+    const input = updateUserSchema.parse(req.body);
+    const data = {
+      ...input,
+      ...(input.department !== undefined ? { department: input.department.trim() || null } : {}),
+    };
+
     const user = await prisma.user.update({ where: { id: req.params.id }, data, select: userSelect });
     await logAudit({ userId: req.user!.sub, action: "update_user", entityType: "User", entityId: user.id });
     res.json(user);
+  } catch (err) {
+    // อีเมลซ้ำกับบัญชีอื่น — ตอบ 409 ให้หน้าเว็บแสดงข้อความที่ตรงสาเหตุ แทน 500 ทั่วไป
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return res.status(409).json({ error: { message: "อีเมลนี้ถูกใช้งานแล้ว / Email already in use" } });
+    }
+    next(err);
+  }
+});
+
+// POST /api/users/:id/reset-password — ออกรหัสผ่านชั่วคราวใหม่ (คืนค่าเพียงครั้งเดียวใน response)
+// ใช้เมื่อผู้ใช้ลืมรหัสผ่าน — งานประกันคุณภาพเป็นผู้ออกให้แล้วแจ้งผู้ใช้ผ่านช่องทางอื่น
+usersRouter.post("/:id/reset-password", async (req, res, next) => {
+  try {
+    const tempPassword = generateTempPassword();
+    const passwordHash = await bcrypt.hash(tempPassword, 10);
+    const user = await prisma.user.update({
+      where: { id: req.params.id },
+      data: { passwordHash },
+      select: userSelect,
+    });
+    await logAudit({ userId: req.user!.sub, action: "reset_password", entityType: "User", entityId: user.id });
+    res.json({ ...user, tempPassword });
   } catch (err) {
     next(err);
   }

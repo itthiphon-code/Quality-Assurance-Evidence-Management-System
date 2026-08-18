@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../../db/prisma";
@@ -62,6 +63,35 @@ authRouter.post("/refresh", async (req, res, next) => {
     res.json({ accessToken });
   } catch {
     res.status(401).json({ error: { message: "Invalid or expired refresh token" } });
+  }
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(8),
+});
+
+// POST /api/auth/change-password — ผู้ใช้เปลี่ยนรหัสผ่านของตนเอง
+// ต้องยืนยันรหัสผ่านปัจจุบันเสมอ แม้จะล็อกอินอยู่แล้ว (กันกรณีเครื่องถูกเปิดทิ้งไว้)
+authRouter.post("/change-password", authMiddleware, async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = changePasswordSchema.parse(req.body);
+
+    const user = await prisma.user.findUnique({ where: { id: req.user!.sub } });
+    if (!user) return res.status(404).json({ error: { message: "User not found" } });
+
+    const ok = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!ok) {
+      return res.status(401).json({ error: { message: "รหัสผ่านปัจจุบันไม่ถูกต้อง / Current password is incorrect" } });
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+    await logAudit({ userId: user.id, action: "change_password", entityType: "User", entityId: user.id });
+
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
   }
 });
 

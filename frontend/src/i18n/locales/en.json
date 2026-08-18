@@ -46,7 +46,22 @@
     "dashboard": "Dashboard",
     "myWork": "My Work",
     "reviewQueue": "Review Queue",
-    "management": "System Management"
+    "management": "System Management",
+    "account": "My Account"
+  },
+  "account": {
+    "title": "My Account",
+    "subtitle": "Account details and security settings",
+    "profile": "Profile",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "passwordHint": "At least 8 characters",
+    "passwordMismatch": "The new passwords do not match",
+    "passwordTooShort": "New password must be at least 8 characters",
+    "currentPasswordWrong": "Current password is incorrect",
+    "passwordChanged": "Password changed successfully"
   },
   "dashboard": {
     "qaWelcome": "Evidence review overview",
@@ -138,6 +153,13 @@
     "activate": "Activate",
     "deactivate": "Deactivate",
     "tempPasswordNotice": "Temporary password for the new user (shown once)",
+    "actions": "Actions",
+    "edit": "Edit",
+    "resetPassword": "Reset password",
+    "resetPasswordConfirm": "Issue a new temporary password for this user? Their current password stops working immediately.",
+    "resetPasswordNotice": "New temporary password (shown once) — copy it and pass it to the user",
+    "emailInUse": "Email already in use",
+    "saveFailed": "Could not save changes",
     "assignedTeachers": "Assigned to",
     "addAssignment": "Add assignment",
     "selectUser": "Select user",

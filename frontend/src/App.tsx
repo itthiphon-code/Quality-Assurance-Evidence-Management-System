@@ -7,6 +7,7 @@ import { RoleRoute } from "./app/RoleRoute";
 import { RootIndexRoute } from "./app/RootIndexRoute";
 import { ThemeProvider } from "./app/ThemeProvider";
 import { AuthProvider } from "./features/auth/authContext";
+import { AccountPage } from "./features/auth/AccountPage";
 import { LoginPage } from "./features/auth/LoginPage";
 import { IndicatorDetailPage } from "./features/teacher/IndicatorDetailPage";
 import { IndicatorsManagementPage } from "./features/qa/IndicatorsManagementPage";
@@ -40,6 +41,14 @@ function AppRoutes() {
             element={
               <ProtectedRoute>
                 <IndicatorDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="account"
+            element={
+              <ProtectedRoute>
+                <AccountPage />
               </ProtectedRoute>
             }
           />
