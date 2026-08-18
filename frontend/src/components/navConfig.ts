@@ -1,4 +1,4 @@
-import { ClipboardCheck, LayoutDashboard, ListChecks, UserCircle, Users, type LucideIcon } from "lucide-react";
+import { ClipboardCheck, LayoutDashboard, ListChecks, ScrollText, UserCircle, Users, type LucideIcon } from "lucide-react";
 import type { UserRole } from "../features/auth/authContext";
 
 export interface NavItem {
@@ -18,6 +18,7 @@ export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
     { labelKey: "nav.reviewQueue", icon: ClipboardCheck, to: "/review-queue" },
     { labelKey: "management.indicators", icon: ListChecks, to: "/management/indicators" },
     { labelKey: "management.users", icon: Users, to: "/management/users" },
+    { labelKey: "nav.audit", icon: ScrollText, to: "/management/audit" },
     { labelKey: "nav.account", icon: UserCircle, to: "/account" },
   ],
   exec: [

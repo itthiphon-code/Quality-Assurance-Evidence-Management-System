@@ -75,7 +75,8 @@
     "myWork": "My Work",
     "reviewQueue": "Review Queue",
     "management": "System Management",
-    "account": "My Account"
+    "account": "My Account",
+    "audit": "Activity Log"
   },
   "account": {
     "title": "My Account",
@@ -222,5 +223,42 @@
     "name": "Indicator",
     "progress": "Progress",
     "needsRevision": "Needs revision"
+  },
+  "audit": {
+    "title": "Activity Log",
+    "subtitle": "A record of who did what to evidence and accounts, and when",
+    "filterAction": "Filter by action:",
+    "allActions": "All actions",
+    "totalRecords": "{{n}} records",
+    "time": "Time",
+    "user": "User",
+    "actionLabel": "Action",
+    "entity": "Entity",
+    "publicVisitor": "Public visitor",
+    "empty": "No activity matches these filters",
+    "prev": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}",
+    "action": {
+      "login": "Signed in",
+      "upload": "Uploaded document",
+      "delete_attachment": "Deleted attachment",
+      "submit": "Submitted for review",
+      "approve": "Approved",
+      "revise": "Sent back for revision",
+      "comment": "Left a comment",
+      "view": "Opened document",
+      "export": "Exported report",
+      "create_user": "Created user",
+      "update_user": "Updated user",
+      "reset_password": "Reset password",
+      "change_password": "Changed password",
+      "activate_user": "Activated account",
+      "deactivate_user": "Deactivated account",
+      "assign": "Assigned owner",
+      "unassign": "Removed owner",
+      "update_indicator": "Updated indicator",
+      "status_override": "Changed evidence status"
+    }
   }
 }

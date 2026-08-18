@@ -13,6 +13,7 @@ import { notificationsRouter } from "./modules/notifications/notifications.contr
 import { publicRouter } from "./modules/public/public.controller";
 import { dashboardRouter } from "./modules/dashboard/dashboard.controller";
 import { reportsRouter } from "./modules/reports/reports.controller";
+import { auditRouter } from "./modules/audit/audit.controller";
 import { apiLimiter } from "./middleware/rateLimit";
 
 export const app = express();
@@ -37,6 +38,7 @@ app.use("/api/notifications", notificationsRouter);
 app.use("/api/public", publicRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/reports", reportsRouter);
+app.use("/api/audit-logs", auditRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: { message: "Not found" } });

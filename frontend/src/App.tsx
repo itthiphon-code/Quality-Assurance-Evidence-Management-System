@@ -16,6 +16,7 @@ import { IndicatorDetailPage } from "./features/teacher/IndicatorDetailPage";
 import { IndicatorsManagementPage } from "./features/qa/IndicatorsManagementPage";
 import { ReviewQueuePage } from "./features/qa/ReviewQueuePage";
 import { UsersManagementPage } from "./features/qa/UsersManagementPage";
+import { AuditLogPage } from "./features/qa/AuditLogPage";
 
 interface NavigationState {
   backgroundLocation?: Location;
@@ -81,6 +82,16 @@ function AppRoutes() {
               <ProtectedRoute>
                 <RoleRoute roles={["qa"]}>
                   <IndicatorsManagementPage />
+                </RoleRoute>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="management/audit"
+            element={
+              <ProtectedRoute>
+                <RoleRoute roles={["qa"]}>
+                  <AuditLogPage />
                 </RoleRoute>
               </ProtectedRoute>
             }

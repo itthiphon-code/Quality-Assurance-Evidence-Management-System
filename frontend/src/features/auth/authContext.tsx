@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { apiClient, getAccessToken, setAccessToken } from "../../lib/apiClient";
+import { apiClient, clearTokens, getAccessToken, setAccessToken, setRefreshToken } from "../../lib/apiClient";
 
 // ไม่มี "assessor" — บทบาทผู้ประเมิน สมศ. เข้าถึงระบบผ่านหน้าเว็บสาธารณะ (ไม่ล็อกอิน) แทน
 export type UserRole = "teacher" | "qa" | "exec";
@@ -31,10 +31,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
       return;
     }
+    // ถ้า access token หมดอายุระหว่างปิดแท็บไว้ interceptor จะต่ออายุให้เองก่อนคำขอนี้จะล้มเหลว
     apiClient
       .get<AuthUser>("/auth/me")
       .then((res) => setUser(res.data))
-      .catch(() => setAccessToken(null))
+      .catch(() => clearTokens())
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -45,11 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login: async (email, password) => {
         const res = await apiClient.post("/auth/login", { email, password });
         setAccessToken(res.data.accessToken);
+        // เก็บ refresh token ไว้ด้วย มิฉะนั้นเซสชันจะใช้ได้แค่ตามอายุ access token (15 นาที)
+        setRefreshToken(res.data.refreshToken);
         setUser(res.data.user);
         return res.data.user as AuthUser;
       },
       logout: () => {
-        setAccessToken(null);
+        clearTokens();
         setUser(null);
       },
     }),
