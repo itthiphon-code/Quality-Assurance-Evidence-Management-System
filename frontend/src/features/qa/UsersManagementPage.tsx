@@ -8,6 +8,7 @@ import { apiClient } from "../../lib/apiClient";
 import { Card } from "../../components/ui/Card";
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { ListSkeleton } from "../../components/ui/Skeleton";
+import { useToast } from "../../components/ui/ToastProvider";
 import type { UserRole } from "../auth/authContext";
 
 interface UserDto {
@@ -34,6 +35,7 @@ const inputClass =
 function CreateUserPanel({ onCreated }: { onCreated: (tempPassword: string, email: string) => void }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const toast = useToast();
   const { register, handleSubmit, reset } = useForm<CreateUserForm>({ defaultValues: { role: "teacher" } });
 
   const createUser = useMutation({
@@ -42,7 +44,9 @@ function CreateUserPanel({ onCreated }: { onCreated: (tempPassword: string, emai
       queryClient.invalidateQueries({ queryKey: ["users"] });
       onCreated(res.data.tempPassword, res.data.email);
       reset();
+      toast.success(t("toast.userCreated"));
     },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   return (
@@ -87,6 +91,7 @@ function UserRow({
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [editing, setEditing] = useState(false);
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +110,7 @@ function UserRow({
       setError(null);
       setEditing(false);
       invalidate();
+      toast.success(t("toast.saved"));
     },
     onError: (err: AxiosError) => {
       setError(err.response?.status === 409 ? t("management.emailInUse") : t("management.saveFailed"));
@@ -113,7 +119,11 @@ function UserRow({
 
   const toggleStatus = useMutation({
     mutationFn: () => apiClient.patch(`/users/${user.id}/status`, { isActive: !user.isActive }),
-    onSuccess: invalidate,
+    onSuccess: () => {
+      invalidate();
+      toast.success(user.isActive ? t("toast.userDeactivated") : t("toast.userActivated"));
+    },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   const resetPassword = useMutation({
@@ -121,7 +131,9 @@ function UserRow({
     onSuccess: (res) => {
       setConfirmingReset(false);
       onPasswordReset(res.data.email, res.data.tempPassword);
+      toast.success(t("toast.passwordReset"));
     },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   const startEdit = () => {

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { apiClient } from "../../lib/apiClient";
 import { ListSkeleton } from "../../components/ui/Skeleton";
+import { useToast } from "../../components/ui/ToastProvider";
 
 interface AssignmentDto {
   user: { id: string; name: string; email: string };
@@ -28,6 +29,7 @@ interface TeacherDto {
 function IndicatorRow({ indicator, teachers }: { indicator: IndicatorDto; teachers: TeacherDto[] }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [nameTh, setNameTh] = useState(indicator.nameTh);
   const [nameEn, setNameEn] = useState(indicator.nameEn);
   const [selectedTeacher, setSelectedTeacher] = useState("");
@@ -36,7 +38,11 @@ function IndicatorRow({ indicator, teachers }: { indicator: IndicatorDto; teache
 
   const saveNames = useMutation({
     mutationFn: () => apiClient.patch(`/indicators/${indicator.id}`, { nameTh, nameEn }),
-    onSuccess: invalidate,
+    onSuccess: () => {
+      invalidate();
+      toast.success(t("toast.saved"));
+    },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   const assign = useMutation({
@@ -44,12 +50,18 @@ function IndicatorRow({ indicator, teachers }: { indicator: IndicatorDto; teache
     onSuccess: () => {
       setSelectedTeacher("");
       invalidate();
+      toast.success(t("toast.assigned"));
     },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   const unassign = useMutation({
     mutationFn: (userId: string) => apiClient.delete(`/indicators/${indicator.id}/assignments/${userId}`),
-    onSuccess: invalidate,
+    onSuccess: () => {
+      invalidate();
+      toast.success(t("toast.unassigned"));
+    },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   const assignedIds = new Set(indicator.assignments.map((a) => a.user.id));

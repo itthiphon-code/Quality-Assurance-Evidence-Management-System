@@ -20,6 +20,21 @@
     "menu": "Menu",
     "closeMenu": "Close menu"
   },
+  "toast": {
+    "saved": "Changes saved",
+    "userCreated": "User created",
+    "passwordReset": "New temporary password issued",
+    "userActivated": "Account activated",
+    "userDeactivated": "Account deactivated",
+    "approved": "Evidence approved",
+    "sentBack": "Sent back for revision",
+    "submitted": "Submitted for review",
+    "assigned": "Assignee added",
+    "unassigned": "Assignee removed",
+    "attachmentAdded": "Attachment added",
+    "attachmentDeleted": "Attachment deleted",
+    "failed": "Action failed"
+  },
   "theme": {
     "light": "Light mode",
     "dark": "Dark mode",

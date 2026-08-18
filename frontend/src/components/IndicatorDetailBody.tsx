@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { AttachmentIcon } from "./AttachmentIcon";
 import { Skeleton } from "./ui/Skeleton";
+import { useToast } from "./ui/ToastProvider";
 import { AttachmentUploader } from "./AttachmentUploader";
 import { StatusBadge } from "./StatusBadge";
 import { openAttachment } from "../lib/attachments";
@@ -52,17 +53,26 @@ function EvidenceItemCard({ indicatorId, evidence }: { indicatorId: string; evid
   const { t, i18n } = useTranslation();
   const isThai = i18n.language?.startsWith("th");
   const queryClient = useQueryClient();
+  const toast = useToast();
   const queryKey = ["indicator-detail", indicatorId];
   const refresh = () => queryClient.invalidateQueries({ queryKey });
 
   const deleteAttachment = useMutation({
     mutationFn: (attachmentId: string) => apiClient.delete(`/evidence/${evidence.id}/attachments/${attachmentId}`),
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      toast.success(t("toast.attachmentDeleted"));
+    },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   const submit = useMutation({
     mutationFn: () => apiClient.post(`/evidence/${evidence.id}/submit`),
-    onSuccess: refresh,
+    onSuccess: () => {
+      refresh();
+      toast.success(t("toast.submitted"));
+    },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   const latestNote = evidence.reviewLogs.find((r) => r.action === "revise" && r.note);

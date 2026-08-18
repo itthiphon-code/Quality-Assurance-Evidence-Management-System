@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { apiClient } from "../lib/apiClient";
+import { useToast } from "./ui/ToastProvider";
 
 interface AttachmentUploaderProps {
   evidenceId: string;
@@ -10,6 +11,7 @@ interface AttachmentUploaderProps {
 
 export function AttachmentUploader({ evidenceId, onChanged }: AttachmentUploaderProps) {
   const { t } = useTranslation();
+  const toast = useToast();
   const [mode, setMode] = useState<"file" | "link">("file");
   const [driveUrl, setDriveUrl] = useState("");
   const [driveName, setDriveName] = useState("");
@@ -25,6 +27,7 @@ export function AttachmentUploader({ evidenceId, onChanged }: AttachmentUploader
     onSuccess: () => {
       setError(null);
       onChanged();
+      toast.success(t("toast.attachmentAdded"));
     },
     onError: () => setError(t("common.error")),
   });
@@ -41,6 +44,7 @@ export function AttachmentUploader({ evidenceId, onChanged }: AttachmentUploader
       setDriveUrl("");
       setDriveName("");
       onChanged();
+      toast.success(t("toast.attachmentAdded"));
     },
     onError: () => setError(t("common.error")),
   });

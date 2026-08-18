@@ -5,6 +5,7 @@ import { apiClient } from "../../lib/apiClient";
 import { openAttachment } from "../../lib/attachments";
 import { AttachmentIcon } from "../../components/AttachmentIcon";
 import { ListSkeleton } from "../../components/ui/Skeleton";
+import { useToast } from "../../components/ui/ToastProvider";
 
 interface AttachmentDto {
   id: string;
@@ -31,15 +32,18 @@ function ReviewQueueRow({ item }: { item: ReviewQueueItemDto }) {
   const { t, i18n } = useTranslation();
   const isThai = i18n.language?.startsWith("th");
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [showReviseNote, setShowReviseNote] = useState(false);
   const [note, setNote] = useState("");
 
   const review = useMutation({
     mutationFn: (payload: { action: "approve" | "revise"; note?: string }) =>
       apiClient.post(`/evidence/${item.id}/review`, payload),
-    onSuccess: () => {
+    onSuccess: (_res, payload) => {
       queryClient.invalidateQueries({ queryKey: ["evidence", "review-queue"] });
+      toast.success(payload.action === "approve" ? t("toast.approved") : t("toast.sentBack"));
     },
+    onError: () => toast.error(t("toast.failed")),
   });
 
   return (

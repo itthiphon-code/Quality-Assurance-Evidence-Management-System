@@ -6,6 +6,7 @@ import { ProtectedRoute } from "./app/ProtectedRoute";
 import { RoleRoute } from "./app/RoleRoute";
 import { RootIndexRoute } from "./app/RootIndexRoute";
 import { ThemeProvider } from "./app/ThemeProvider";
+import { ToastProvider } from "./components/ui/ToastProvider";
 import { AuthProvider } from "./features/auth/authContext";
 import { AccountPage } from "./features/auth/AccountPage";
 import { LoginPage } from "./features/auth/LoginPage";
@@ -105,11 +106,13 @@ function AppRoutes() {
 export function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </AuthProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 }
