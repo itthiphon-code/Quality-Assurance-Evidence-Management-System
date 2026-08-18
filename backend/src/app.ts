@@ -10,7 +10,7 @@ import { indicatorsRouter } from "./modules/indicators/indicators.controller";
 import { evidenceRouter } from "./modules/evidence/evidence.controller";
 import { attachmentsRouter } from "./modules/attachments/attachments.controller";
 import { notificationsRouter } from "./modules/notifications/notifications.controller";
-import { assessorRouter } from "./modules/assessor/assessor.controller";
+import { publicRouter } from "./modules/public/public.controller";
 import { dashboardRouter } from "./modules/dashboard/dashboard.controller";
 import { reportsRouter } from "./modules/reports/reports.controller";
 import { apiLimiter } from "./middleware/rateLimit";
@@ -34,7 +34,7 @@ app.use("/api/indicators", indicatorsRouter);
 app.use("/api/evidence", evidenceRouter);
 app.use("/api/attachments", attachmentsRouter);
 app.use("/api/notifications", notificationsRouter);
-app.use("/api/assessor", assessorRouter);
+app.use("/api/public", publicRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/reports", reportsRouter);
 

@@ -3,7 +3,7 @@ import { prisma } from "../../db/prisma";
 import { authMiddleware } from "../../middleware/auth";
 import { logAudit } from "../../middleware/audit";
 import { getPresignedDownloadUrl } from "../../storage/s3Client";
-import { canAccessEvidence, isApprovedReadableByAssessor } from "../evidence/evidence.service";
+import { canAccessEvidence } from "../evidence/evidence.service";
 
 export const attachmentsRouter = Router();
 attachmentsRouter.use(authMiddleware);
@@ -18,9 +18,7 @@ attachmentsRouter.get("/:id/download", async (req, res, next) => {
     });
     if (!attachment) return res.status(404).json({ error: { message: "Attachment not found" } });
 
-    const allowed =
-      (await canAccessEvidence(req.user!.sub, req.user!.role, attachment.evidence.indicatorId)) ||
-      isApprovedReadableByAssessor(req.user!.role, attachment.evidence.status);
+    const allowed = await canAccessEvidence(req.user!.sub, req.user!.role, attachment.evidence.indicatorId);
     if (!allowed) return res.status(403).json({ error: { message: "Forbidden" } });
 
     const url = attachment.type === "file" ? await getPresignedDownloadUrl(attachment.url) : attachment.url;

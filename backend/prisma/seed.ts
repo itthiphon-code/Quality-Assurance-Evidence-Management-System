@@ -211,10 +211,11 @@ const standards: StandardSeed[] = [
   },
 ];
 
+// หมายเหตุ: ไม่มีบัญชีบทบาท assessor อีกต่อไป — ผู้ประเมิน สมศ. เข้าถึงแฟ้มตรวจเยี่ยม/สถิติ
+// ผ่านหน้าเว็บสาธารณะ (ไม่ต้องล็อกอิน) แทน ดู backend/src/modules/public/
 const demoUsers: { name: string; email: string; role: UserRole; department: string }[] = [
   { name: "ครูสมชาย ใจดี", email: "teacher@qaems.local", role: UserRole.teacher, department: "งานวัดผลและประเมินผล" },
   { name: "งานประกันคุณภาพ วิทยาลัย", email: "qa@qaems.local", role: UserRole.qa, department: "งานประกันคุณภาพ" },
-  { name: "ผู้ประเมิน สมศ.", email: "assessor@qaems.local", role: UserRole.assessor, department: "สมศ." },
   { name: "ผู้อำนวยการวิทยาลัย", email: "exec@qaems.local", role: UserRole.exec, department: "ผู้บริหาร" },
 ];
 

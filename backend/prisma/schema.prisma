@@ -170,8 +170,8 @@ model ReviewLog {
 // (ใครอัปโหลด/อนุมัติ/เปิดดูเมื่อใด) ตามหัวข้อ Non-functional
 model AuditLog {
   id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  userId     String? // null = การเข้าถึงแบบสาธารณะ (ไม่ต้องล็อกอิน) เช่น เปิดดูหลักฐานผ่านหน้าแฟ้มสาธารณะ
+  user       User?    @relation(fields: [userId], references: [id])
   action     String // e.g. "upload", "approve", "revise", "view", "login", "export"
   entityType String // e.g. "EvidenceItem", "Attachment"
   entityId   String?

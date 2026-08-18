@@ -3,8 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { apiClient } from "../../lib/apiClient";
-
-type UserRole = "teacher" | "qa" | "assessor" | "exec";
+import type { UserRole } from "../auth/authContext";
 
 interface UserDto {
   id: string;
@@ -22,7 +21,7 @@ interface CreateUserForm {
   department: string;
 }
 
-const ROLES: UserRole[] = ["teacher", "qa", "assessor", "exec"];
+const ROLES: UserRole[] = ["teacher", "qa", "exec"];
 
 function CreateUserPanel({ onCreated }: { onCreated: (tempPassword: string, email: string) => void }) {
   const { t } = useTranslation();

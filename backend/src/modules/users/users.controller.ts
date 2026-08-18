@@ -21,7 +21,11 @@ const userSelect = {
   createdAt: true,
 } as const;
 
-const listUsersQuerySchema = z.object({ role: z.nativeEnum(UserRole).optional() });
+// ไม่รวม "assessor" — บทบาทนั้นเข้าถึงระบบผ่านหน้าเว็บสาธารณะ (ไม่ล็อกอิน) แทน
+// ยังคงอยู่ใน UserRole enum ของ Prisma (ไม่ลบ เพราะไม่คุ้มความเสี่ยงจาก migration) แต่ห้ามสร้าง/แก้ไขผู้ใช้ให้เป็นบทบาทนี้อีก
+const loginRoleSchema = z.enum(["teacher", "qa", "exec"]) satisfies z.ZodType<Exclude<UserRole, "assessor">>;
+
+const listUsersQuerySchema = z.object({ role: loginRoleSchema.optional() });
 
 // GET /api/users?role=teacher — รายชื่อผู้ใช้ (เฉพาะงานประกันคุณภาพ)
 usersRouter.get("/", async (req, res, next) => {
@@ -41,7 +45,7 @@ usersRouter.get("/", async (req, res, next) => {
 const createUserSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
-  role: z.nativeEnum(UserRole),
+  role: loginRoleSchema,
   department: z.string().min(1).optional(),
 });
 
@@ -71,7 +75,7 @@ usersRouter.post("/", async (req, res, next) => {
 
 const updateUserSchema = z.object({
   name: z.string().min(1).optional(),
-  role: z.nativeEnum(UserRole).optional(),
+  role: loginRoleSchema.optional(),
   department: z.string().min(1).optional(),
 });
 

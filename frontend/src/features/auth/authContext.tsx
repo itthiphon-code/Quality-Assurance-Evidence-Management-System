@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { apiClient, getAccessToken, setAccessToken } from "../../lib/apiClient";
 
-export type UserRole = "teacher" | "qa" | "assessor" | "exec";
+// ไม่มี "assessor" — บทบาทผู้ประเมิน สมศ. เข้าถึงระบบผ่านหน้าเว็บสาธารณะ (ไม่ล็อกอิน) แทน
+export type UserRole = "teacher" | "qa" | "exec";
 
 export interface AuthUser {
   id: string;

@@ -10,7 +10,6 @@ import {
   ALLOWED_MIME_TYPES,
   MAX_FILE_SIZE_BYTES,
   canAccessEvidence,
-  isApprovedReadableByAssessor,
   loadEvidenceWithIndicator,
 } from "./evidence.service";
 
@@ -51,9 +50,7 @@ evidenceRouter.get("/:id", async (req, res, next) => {
     const evidence = await loadEvidenceWithIndicator(req.params.id);
     if (!evidence) return res.status(404).json({ error: { message: "Evidence not found" } });
 
-    const allowed =
-      (await canAccessEvidence(req.user!.sub, req.user!.role, evidence.indicatorId)) ||
-      isApprovedReadableByAssessor(req.user!.role, evidence.status);
+    const allowed = await canAccessEvidence(req.user!.sub, req.user!.role, evidence.indicatorId);
     if (!allowed) return res.status(403).json({ error: { message: "Forbidden" } });
 
     const full = await prisma.evidenceItem.findUnique({

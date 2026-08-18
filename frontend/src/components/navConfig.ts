@@ -14,6 +14,5 @@ export const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
     { labelKey: "management.indicators", to: "/management/indicators" },
     { labelKey: "management.users", to: "/management/users" },
   ],
-  assessor: [{ labelKey: "nav.assessorFolder", to: "/" }],
   exec: [{ labelKey: "nav.dashboard", to: "/" }],
 };

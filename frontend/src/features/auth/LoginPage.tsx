@@ -11,13 +11,8 @@ interface LoginFormValues {
   password: string;
 }
 
-const DEMO_ACCOUNTS = [
-  { role: "teacher", email: "teacher@qaems.local" },
-  { role: "qa", email: "qa@qaems.local" },
-  { role: "assessor", email: "assessor@qaems.local" },
-  { role: "exec", email: "exec@qaems.local" },
-] as const;
-
+// สำหรับผู้รับผิดชอบนำข้อมูลเข้าระบบ (ครู/งานประกันคุณภาพ) และผู้บริหารเท่านั้น
+// ผู้ประเมิน สมศ./บุคคลทั่วไปเข้าดูแฟ้มตรวจเยี่ยมได้จากหน้าแรกโดยไม่ต้องเข้าสู่ระบบ
 export function LoginPage() {
   const { t } = useTranslation();
   const { login } = useAuth();
@@ -26,7 +21,6 @@ export function LoginPage() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { isSubmitting },
   } = useForm<LoginFormValues>();
 
@@ -93,26 +87,6 @@ export function LoginPage() {
               {t("auth.loginButton")}
             </button>
           </form>
-
-          <div className="mt-6 border-t border-border pt-4">
-            <p className="mb-2 text-xs font-medium text-muted">{t("auth.demoAccounts")}</p>
-            <ul className="space-y-1">
-              {DEMO_ACCOUNTS.map((acc) => (
-                <li key={acc.email}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setValue("email", acc.email);
-                      setValue("password", "Passw0rd!");
-                    }}
-                    className="text-xs text-primary-700 underline decoration-dotted hover:text-primary dark:text-primary"
-                  >
-                    {t(`role.${acc.role}`)} — {acc.email}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
     </div>

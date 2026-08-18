@@ -35,20 +35,17 @@
     "email": "Email",
     "password": "Password",
     "loginButton": "Sign in",
-    "invalidCredentials": "Invalid email or password",
-    "demoAccounts": "Demo accounts (same password for all)"
+    "invalidCredentials": "Invalid email or password"
   },
   "role": {
     "teacher": "Teacher / Responsible Staff",
     "qa": "Quality Assurance Office",
-    "assessor": "External Assessor (ONESQA)",
     "exec": "School Executive"
   },
   "nav": {
     "dashboard": "Dashboard",
     "myWork": "My Work",
     "reviewQueue": "Review Queue",
-    "assessorFolder": "Evidence Folder",
     "management": "System Management"
   },
   "dashboard": {
@@ -146,10 +143,13 @@
     "submit": "New evidence submitted for review"
   },
   "assessorFolder": {
-    "title": "Evidence Folder",
-    "subtitle": "Approved evidence, grouped by standard and indicator",
     "empty": "No approved evidence in this indicator yet",
     "visitMethod": "Visit method"
+  },
+  "public": {
+    "title": "Evidence Folder — Ubon Ratchathani Technical College",
+    "subtitle": "Readiness stats and approved evidence, open to view without signing in",
+    "folderTitle": "Evidence by standard and indicator"
   },
   "readinessTable": {
     "code": "Code",

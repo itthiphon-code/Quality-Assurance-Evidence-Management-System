@@ -1,7 +1,7 @@
 import { prisma } from "../db/prisma";
 
 interface AuditEntry {
-  userId: string;
+  userId: string | null; // null = การเข้าถึงแบบสาธารณะ ไม่มีผู้ใช้ที่ล็อกอิน
   action: string; // "login" | "upload" | "approve" | "revise" | "view" | "export" | ...
   entityType: string;
   entityId?: string;

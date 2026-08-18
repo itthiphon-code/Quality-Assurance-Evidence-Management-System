@@ -1,8 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./app/AppLayout";
-import { HomeRoute } from "./app/HomeRoute";
 import { ProtectedRoute } from "./app/ProtectedRoute";
 import { RoleRoute } from "./app/RoleRoute";
+import { RootIndexRoute } from "./app/RootIndexRoute";
 import { ThemeProvider } from "./app/ThemeProvider";
 import { AuthProvider } from "./features/auth/authContext";
 import { LoginPage } from "./features/auth/LoginPage";
@@ -18,38 +18,46 @@ export function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<HomeRoute />} />
-              <Route path="indicators/:id" element={<IndicatorDetailPage />} />
+            {/* "/" ไม่ผ่าน ProtectedRoute อีกต่อไป — index route (RootIndexRoute) เปิดสาธารณะ
+                ส่วนเส้นทางย่อยอื่น ๆ ที่ต้องล็อกอินจะครอบด้วย ProtectedRoute เป็นรายเส้นทางแทน */}
+            <Route path="/" element={<AppLayout />}>
+              <Route index element={<RootIndexRoute />} />
+              <Route
+                path="indicators/:id"
+                element={
+                  <ProtectedRoute>
+                    <IndicatorDetailPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="review-queue"
                 element={
-                  <RoleRoute roles={["qa"]}>
-                    <ReviewQueuePage />
-                  </RoleRoute>
+                  <ProtectedRoute>
+                    <RoleRoute roles={["qa"]}>
+                      <ReviewQueuePage />
+                    </RoleRoute>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="management/users"
                 element={
-                  <RoleRoute roles={["qa"]}>
-                    <UsersManagementPage />
-                  </RoleRoute>
+                  <ProtectedRoute>
+                    <RoleRoute roles={["qa"]}>
+                      <UsersManagementPage />
+                    </RoleRoute>
+                  </ProtectedRoute>
                 }
               />
               <Route
                 path="management/indicators"
                 element={
-                  <RoleRoute roles={["qa"]}>
-                    <IndicatorsManagementPage />
-                  </RoleRoute>
+                  <ProtectedRoute>
+                    <RoleRoute roles={["qa"]}>
+                      <IndicatorsManagementPage />
+                    </RoleRoute>
+                  </ProtectedRoute>
                 }
               />
             </Route>

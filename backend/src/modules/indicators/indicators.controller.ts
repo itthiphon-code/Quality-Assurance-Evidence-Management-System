@@ -37,7 +37,7 @@ indicatorsRouter.get("/", async (req, res, next) => {
 async function canAccessIndicatorDetail(userId: string, role: string, indicatorId: string): Promise<boolean> {
   if (role === "qa") return true;
   if (role === "teacher") return isAssignedToIndicator(userId, indicatorId);
-  // assessor/exec: มุมมองแบบอ่านอย่างเดียวของบทบาทนี้จะมาใน Phase 3
+  // exec: ไม่มีสิทธิ์เข้าถึงรายละเอียดตัวชี้วัดระดับนี้ (ใช้แดชบอร์ดสรุปแทน)
   return false;
 }
 

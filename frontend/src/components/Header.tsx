@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { useAuth } from "../features/auth/authContext";
 import { LangToggle } from "./LangToggle";
 import { MobileNav } from "./MobileNav";
@@ -51,6 +52,14 @@ export function Header() {
               {t("common.logout")}
             </button>
           </div>
+        )}
+        {!user && (
+          <Link
+            to="/login"
+            className="ml-1 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-tint dark:text-primary dark:hover:bg-surface-alt"
+          >
+            {t("auth.loginButton")}
+          </Link>
         )}
       </div>
 
