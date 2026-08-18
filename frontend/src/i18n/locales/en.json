@@ -45,7 +45,8 @@
     "attachmentAdded": "Attachment added",
     "attachmentDeleted": "Attachment deleted",
     "failed": "Action failed",
-    "attachmentsAdded": "{{n}} attachment(s) added"
+    "attachmentsAdded": "{{n}} attachment(s) added",
+    "statusChanged": "Status updated"
   },
   "theme": {
     "light": "Light mode",
@@ -155,7 +156,8 @@
     "uploadedBy": "Uploaded by",
     "multiFileHint": "You can select several files at once (max 50MB each)",
     "uploadingProgress": "Uploading {{current}}/{{total}}...",
-    "uploadPartialFailed": "{{n}} file(s) failed to upload"
+    "uploadPartialFailed": "{{n}} file(s) failed to upload",
+    "changeStatus": "Change status:"
   },
   "reviewQueue": {
     "title": "Review Queue",

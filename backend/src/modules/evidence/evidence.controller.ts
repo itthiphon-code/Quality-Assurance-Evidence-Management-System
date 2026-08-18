@@ -1,6 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { z } from "zod";
+import { EvidenceStatus } from "@prisma/client";
 import { prisma } from "../../db/prisma";
 import { authMiddleware } from "../../middleware/auth";
 import { requireRole } from "../../middleware/rbac";
@@ -201,6 +202,42 @@ evidenceRouter.post("/:id/submit", async (req, res, next) => {
 const reviewSchema = z.object({
   action: z.enum(["approve", "revise"]),
   note: z.string().min(1).optional(),
+});
+
+const statusOverrideSchema = z.object({ status: z.nativeEnum(EvidenceStatus) });
+
+// PATCH /api/evidence/:id/status — งานประกันคุณภาพปรับสถานะเองได้โดยตรง (เฉพาะงานประกันคุณภาพ)
+// ใช้ "คืนสถานะ" รายการที่อนุมัติไปแล้วกลับมาแก้ไขต่อ เมื่อมีการเพิ่ม/แก้เอกสารแนบภายหลัง
+// แยกจาก /review ซึ่งเป็นการตรวจตามกระบวนการปกติ (ต้องอยู่สถานะ review เท่านั้น)
+evidenceRouter.patch("/:id/status", requireRole("qa"), async (req, res, next) => {
+  try {
+    const { status } = statusOverrideSchema.parse(req.body);
+    const evidence = await prisma.evidenceItem.findUnique({ where: { id: req.params.id } });
+    if (!evidence) return res.status(404).json({ error: { message: "Evidence not found" } });
+
+    const updated = await prisma.evidenceItem.update({ where: { id: evidence.id }, data: { status } });
+
+    // บันทึกเป็น comment ในประวัติการตรวจ เพื่อให้ยังตามรอยได้ว่าใครเปลี่ยนสถานะเมื่อใด
+    await prisma.reviewLog.create({
+      data: {
+        evidenceId: evidence.id,
+        reviewerId: req.user!.sub,
+        action: "comment",
+        note: `เปลี่ยนสถานะ ${evidence.status} → ${status}`,
+      },
+    });
+    await logAudit({
+      userId: req.user!.sub,
+      action: "status_override",
+      entityType: "EvidenceItem",
+      entityId: evidence.id,
+      meta: { from: evidence.status, to: status },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // POST /api/evidence/:id/review — อนุมัติ/ส่งกลับแก้ไข (เฉพาะงานประกันคุณภาพ)

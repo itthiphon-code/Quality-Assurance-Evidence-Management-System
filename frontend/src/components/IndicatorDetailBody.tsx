@@ -7,6 +7,7 @@ import { AttachmentUploader } from "./AttachmentUploader";
 import { StatusBadge } from "./StatusBadge";
 import { openAttachment } from "../lib/attachments";
 import { apiClient } from "../lib/apiClient";
+import { useAuth } from "../features/auth/authContext";
 
 interface AttachmentDto {
   id: string;
@@ -49,11 +50,14 @@ interface IndicatorDetailDto {
   evidenceItems: EvidenceItemDto[];
 }
 
+const EVIDENCE_STATUSES = ["todo", "progress", "review", "approved", "revise"] as const;
+
 function EvidenceItemCard({ indicatorId, evidence }: { indicatorId: string; evidence: EvidenceItemDto }) {
   const { t, i18n } = useTranslation();
   const isThai = i18n.language?.startsWith("th");
   const queryClient = useQueryClient();
   const toast = useToast();
+  const { user } = useAuth();
   const queryKey = ["indicator-detail", indicatorId];
   const refresh = () => queryClient.invalidateQueries({ queryKey });
 
@@ -75,9 +79,21 @@ function EvidenceItemCard({ indicatorId, evidence }: { indicatorId: string; evid
     onError: () => toast.error(t("toast.failed")),
   });
 
+  const setStatus = useMutation({
+    mutationFn: (status: string) => apiClient.patch(`/evidence/${evidence.id}/status`, { status }),
+    onSuccess: () => {
+      refresh();
+      toast.success(t("toast.statusChanged"));
+    },
+    onError: () => toast.error(t("toast.failed")),
+  });
+
   const latestNote = evidence.reviewLogs.find((r) => r.action === "revise" && r.note);
-  const canEdit = evidence.status === "todo" || evidence.status === "progress" || evidence.status === "revise";
+  // แนบ/ลบเอกสารได้ทุกสถานะ — รวมถึงรายการที่อนุมัติไปแล้ว เพราะการรวบรวมหลักฐานเป็นงานต่อเนื่อง
+  // ความถูกต้องของสถานะคุมด้วยงานประกันคุณภาพผ่านตัวเลือก "เปลี่ยนสถานะ" ด้านล่างแทน
+  const canEdit = true;
   const canSubmit = (evidence.status === "progress" || evidence.status === "revise") && evidence.attachments.length > 0;
+  const isQa = user?.role === "qa";
 
   return (
     <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
@@ -122,21 +138,37 @@ function EvidenceItemCard({ indicatorId, evidence }: { indicatorId: string; evid
 
       {canEdit && <AttachmentUploader evidenceId={evidence.id} onChanged={refresh} />}
 
-      {canEdit && (
-        <div className="mt-3 flex items-center justify-end gap-2">
-          {!canSubmit && evidence.attachments.length === 0 && (
-            <span className="text-xs text-muted">{t("indicatorDetail.submitRequiresAttachment")}</span>
-          )}
-          <button
-            type="button"
-            disabled={!canSubmit || submit.isPending}
-            onClick={() => submit.mutate()}
-            className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-tint transition-colors hover:bg-primary-700 disabled:opacity-50"
-          >
-            {t("indicatorDetail.submitForReview")}
-          </button>
-        </div>
-      )}
+      <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
+        {/* งานประกันคุณภาพคืน/เปลี่ยนสถานะเองได้ เช่นดึงรายการที่อนุมัติแล้วกลับมาแก้ไขต่อ */}
+        {isQa && (
+          <label className="mr-auto flex items-center gap-1.5 text-xs text-muted">
+            {t("indicatorDetail.changeStatus")}
+            <select
+              value={evidence.status}
+              disabled={setStatus.isPending}
+              onChange={(e) => setStatus.mutate(e.target.value)}
+              className="rounded-md border border-border bg-base px-2 py-1 text-xs text-ink outline-none focus:border-primary disabled:opacity-50"
+            >
+              {EVIDENCE_STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {t(`status.${s}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {!canSubmit && evidence.attachments.length === 0 && (
+          <span className="text-xs text-muted">{t("indicatorDetail.submitRequiresAttachment")}</span>
+        )}
+        <button
+          type="button"
+          disabled={!canSubmit || submit.isPending}
+          onClick={() => submit.mutate()}
+          className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-tint transition-colors hover:bg-primary-700 disabled:opacity-50"
+        >
+          {t("indicatorDetail.submitForReview")}
+        </button>
+      </div>
     </div>
   );
 }
