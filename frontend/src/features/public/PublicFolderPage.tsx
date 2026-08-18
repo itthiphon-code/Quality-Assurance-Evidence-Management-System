@@ -172,18 +172,13 @@ export function PublicFolderPage() {
                         {t("assessorFolder.visitMethod")}: {ind.visitMethod}
                       </span>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
-                      {ind.collectionMethods.length > 0 && (
-                        <span>
-                          {t("indicatorDetail.collectionMethods")}: {ind.collectionMethods.map((m) => m.name).join(", ")}
-                        </span>
-                      )}
-                      {ind.dataSources.length > 0 && (
+                    {ind.dataSources.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
                         <span>
                           {t("indicatorDetail.dataSources")}: {ind.dataSources.map((s) => s.name).join(", ")}
                         </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     {ind.evidenceItems.length === 0 ? (
                       <p className="mt-3 text-xs text-muted">{t("assessorFolder.empty")}</p>
