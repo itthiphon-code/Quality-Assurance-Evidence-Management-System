@@ -44,7 +44,8 @@
     "unassigned": "Assignee removed",
     "attachmentAdded": "Attachment added",
     "attachmentDeleted": "Attachment deleted",
-    "failed": "Action failed"
+    "failed": "Action failed",
+    "attachmentsAdded": "{{n}} attachment(s) added"
   },
   "theme": {
     "light": "Light mode",
@@ -151,7 +152,10 @@
     "dataSources": "Data sources",
     "owner": "Responsible unit",
     "assignedTo": "Assigned to",
-    "uploadedBy": "Uploaded by"
+    "uploadedBy": "Uploaded by",
+    "multiFileHint": "You can select several files at once (max 50MB each)",
+    "uploadingProgress": "Uploading {{current}}/{{total}}...",
+    "uploadPartialFailed": "{{n}} file(s) failed to upload"
   },
   "reviewQueue": {
     "title": "Review Queue",

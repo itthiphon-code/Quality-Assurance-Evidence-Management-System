@@ -16,20 +16,42 @@ export function AttachmentUploader({ evidenceId, onChanged }: AttachmentUploader
   const [driveUrl, setDriveUrl] = useState("");
   const [driveName, setDriveName] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
 
-  const uploadFile = useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append("file", file);
-      // ไม่กำหนด Content-Type เอง — ต้องปล่อยให้ browser/axios ใส่ boundary ของ multipart ให้อัตโนมัติ
-      return apiClient.post(`/evidence/${evidenceId}/attachments`, formData);
+  // อัปโหลดทีละไฟล์เรียงกัน แม้ผู้ใช้จะเลือกมาหลายไฟล์พร้อมกัน — ไม่รวบยิงเป็นคำขอเดียว
+  // เพราะ nginx หน้าเว็บจำกัดขนาดคำขอไว้ที่ 55MB (ดู nginx/nginx.conf) การส่งหลายไฟล์
+  // รวมกันในคำขอเดียวจะทะลุเพดานทันทีทั้งที่แต่ละไฟล์ยังไม่เกิน 50MB ตามกติกาของระบบ
+  const uploadFiles = useMutation({
+    mutationFn: async (files: File[]) => {
+      let ok = 0;
+      let failed = 0;
+      for (let i = 0; i < files.length; i++) {
+        setProgress({ current: i + 1, total: files.length });
+        const formData = new FormData();
+        formData.append("file", files[i]);
+        try {
+          // ไม่กำหนด Content-Type เอง — ต้องปล่อยให้ browser/axios ใส่ boundary ของ multipart ให้อัตโนมัติ
+          await apiClient.post(`/evidence/${evidenceId}/attachments`, formData);
+          ok++;
+        } catch {
+          // ไฟล์เดียวพังไม่ควรทำให้ไฟล์ที่เหลือไม่ได้อัปโหลด — เก็บจำนวนไว้รายงานรวมทีเดียว
+          failed++;
+        }
+      }
+      return { ok, failed };
     },
-    onSuccess: () => {
-      setError(null);
+    onSuccess: ({ ok, failed }) => {
+      setProgress(null);
+      // รีเฟรชเสมอแม้บางไฟล์พลาด เพื่อให้รายการแสดงไฟล์ที่สำเร็จแล้วจริง
       onChanged();
-      toast.success(t("toast.attachmentAdded"));
+      setError(failed > 0 ? t("indicatorDetail.uploadPartialFailed", { n: failed }) : null);
+      if (ok > 0) toast.success(t("toast.attachmentsAdded", { n: ok }));
+      if (failed > 0) toast.error(t("indicatorDetail.uploadPartialFailed", { n: failed }));
     },
-    onError: () => setError(t("common.error")),
+    onError: () => {
+      setProgress(null);
+      setError(t("common.error"));
+    },
   });
 
   const attachLink = useMutation({
@@ -70,16 +92,20 @@ export function AttachmentUploader({ evidenceId, onChanged }: AttachmentUploader
       </div>
 
       {mode === "file" ? (
-        <input
-          type="file"
-          disabled={uploadFile.isPending}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) uploadFile.mutate(file);
-            e.target.value = "";
-          }}
-          className="block w-full text-xs text-muted file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-tint hover:file:bg-primary-700"
-        />
+        <>
+          <input
+            type="file"
+            multiple
+            disabled={uploadFiles.isPending}
+            onChange={(e) => {
+              const files = Array.from(e.target.files ?? []);
+              if (files.length > 0) uploadFiles.mutate(files);
+              e.target.value = "";
+            }}
+            className="block w-full text-xs text-muted file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-tint hover:file:bg-primary-700"
+          />
+          <p className="mt-1 text-[11px] text-muted">{t("indicatorDetail.multiFileHint")}</p>
+        </>
       ) : (
         <div className="space-y-2">
           <input
@@ -108,7 +134,13 @@ export function AttachmentUploader({ evidenceId, onChanged }: AttachmentUploader
         </div>
       )}
 
-      {uploadFile.isPending && <p className="mt-1 text-xs text-muted">{t("indicatorDetail.uploading")}</p>}
+      {uploadFiles.isPending && (
+        <p className="mt-1 text-xs text-muted">
+          {progress && progress.total > 1
+            ? t("indicatorDetail.uploadingProgress", { current: progress.current, total: progress.total })
+            : t("indicatorDetail.uploading")}
+        </p>
+      )}
       {error && <p className="mt-1 text-xs text-status-danger">{error}</p>}
     </div>
   );

@@ -16,6 +16,13 @@ import {
 export const evidenceRouter = Router();
 evidenceRouter.use(authMiddleware);
 
+// multer อ่านชื่อไฟล์จากส่วนหัว multipart เป็น latin1 ตามสเปกเดิมของ HTTP ทำให้ชื่อไฟล์ภาษาไทย
+// (ซึ่งเป็นค่าปกติของระบบนี้) กลายเป็นอักขระเพี้ยน เช่น "เอกสาร.pdf" -> "à¹à¸­à¸à¸ªà¸²à¸£.pdf"
+// จึงต้องตีความไบต์ชุดเดิมใหม่เป็น UTF-8 ก่อนนำไปเก็บ
+function decodeUploadFilename(originalname: string): string {
+  return Buffer.from(originalname, "latin1").toString("utf8");
+}
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_FILE_SIZE_BYTES },
@@ -83,13 +90,14 @@ evidenceRouter.post("/:id/attachments", upload.single("file"), async (req, res, 
 
     let attachment;
     if (req.file) {
-      const key = buildObjectKey(evidence.id, req.file.originalname);
+      const originalName = decodeUploadFilename(req.file.originalname);
+      const key = buildObjectKey(evidence.id, originalName);
       await putObject(key, req.file.buffer, req.file.mimetype);
       attachment = await prisma.attachment.create({
         data: {
           evidenceId: evidence.id,
           type: "file",
-          filename: req.file.originalname,
+          filename: originalName,
           url: key,
           size: req.file.size,
           uploadedById: req.user!.sub,

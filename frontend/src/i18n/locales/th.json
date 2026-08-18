@@ -44,7 +44,8 @@
     "unassigned": "นำผู้รับผิดชอบออกแล้ว",
     "attachmentAdded": "แนบเอกสารเรียบร้อยแล้ว",
     "attachmentDeleted": "ลบเอกสารแนบแล้ว",
-    "failed": "ดำเนินการไม่สำเร็จ"
+    "failed": "ดำเนินการไม่สำเร็จ",
+    "attachmentsAdded": "แนบเอกสาร {{n}} รายการเรียบร้อยแล้ว"
   },
   "theme": {
     "light": "โหมดสว่าง",
@@ -151,7 +152,10 @@
     "dataSources": "แหล่งข้อมูล",
     "owner": "หน่วยงานรับผิดชอบ",
     "assignedTo": "ผู้รับผิดชอบ",
-    "uploadedBy": "อัปโหลดโดย"
+    "uploadedBy": "อัปโหลดโดย",
+    "multiFileHint": "เลือกได้หลายไฟล์พร้อมกัน (สูงสุดไฟล์ละ 50MB)",
+    "uploadingProgress": "กำลังอัปโหลด {{current}}/{{total}}...",
+    "uploadPartialFailed": "อัปโหลดไม่สำเร็จ {{n}} ไฟล์"
   },
   "reviewQueue": {
     "title": "คิวตรวจสอบ",
