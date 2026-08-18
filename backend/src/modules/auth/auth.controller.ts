@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../../db/prisma";
 import { authMiddleware } from "../../middleware/auth";
 import { logAudit } from "../../middleware/audit";
+import { loginLimiter } from "../../middleware/rateLimit";
 import {
   InvalidCredentialsError,
   signAccessToken,
@@ -18,7 +19,7 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
-authRouter.post("/login", async (req, res, next) => {
+authRouter.post("/login", loginLimiter, async (req, res, next) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
     const user = await verifyCredentials(email, password);

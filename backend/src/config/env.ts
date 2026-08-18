@@ -26,5 +26,6 @@ export const env = {
     accessKey: process.env.MINIO_ROOT_USER ?? "qaems_minio",
     secretKey: process.env.MINIO_ROOT_PASSWORD ?? "qaems_minio_password",
     bucket: process.env.MINIO_BUCKET ?? "qaems-evidence",
+    presignedUrlExpiresSeconds: Number(process.env.PRESIGNED_URL_EXPIRES_SECONDS ?? 600),
   },
 };

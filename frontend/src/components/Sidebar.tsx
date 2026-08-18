@@ -1,24 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../features/auth/authContext";
-import type { UserRole } from "../features/auth/authContext";
-
-interface NavItem {
-  labelKey: string;
-  to?: string; // ไม่มี to = เมนูที่ยังไม่เปิดใช้งานในเฟสนี้ (แสดงแบบจาง กดไม่ได้)
-}
-
-const NAV_BY_ROLE: Record<UserRole, NavItem[]> = {
-  teacher: [{ labelKey: "nav.myWork", to: "/" }],
-  qa: [
-    { labelKey: "nav.dashboard", to: "/" },
-    { labelKey: "nav.reviewQueue", to: "/review-queue" },
-    { labelKey: "management.indicators", to: "/management/indicators" },
-    { labelKey: "management.users", to: "/management/users" },
-  ],
-  assessor: [{ labelKey: "nav.assessorFolder", to: "/" }],
-  exec: [{ labelKey: "nav.dashboard", to: "/" }],
-};
+import { NAV_BY_ROLE } from "./navConfig";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   isActive

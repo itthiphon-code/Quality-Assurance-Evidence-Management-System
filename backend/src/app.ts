@@ -12,6 +12,8 @@ import { attachmentsRouter } from "./modules/attachments/attachments.controller"
 import { notificationsRouter } from "./modules/notifications/notifications.controller";
 import { assessorRouter } from "./modules/assessor/assessor.controller";
 import { dashboardRouter } from "./modules/dashboard/dashboard.controller";
+import { reportsRouter } from "./modules/reports/reports.controller";
+import { apiLimiter } from "./middleware/rateLimit";
 
 export const app = express();
 
@@ -23,6 +25,8 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+app.use("/api", apiLimiter);
+
 app.use("/api/auth", authRouter);
 app.use("/api/standards", standardsRouter);
 app.use("/api/users", usersRouter);
@@ -32,6 +36,7 @@ app.use("/api/attachments", attachmentsRouter);
 app.use("/api/notifications", notificationsRouter);
 app.use("/api/assessor", assessorRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/reports", reportsRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: { message: "Not found" } });

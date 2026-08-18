@@ -16,7 +16,9 @@
     "noData": "No data",
     "indicators": "Indicators",
     "evidenceItems": "Evidence items",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "menu": "Menu",
+    "closeMenu": "Close menu"
   },
   "theme": {
     "light": "Light mode",
@@ -63,6 +65,12 @@
     "noRisk": "No at-risk items right now",
     "riskReasonRevise": "Has evidence sent back for revision",
     "riskReasonNoProgress": "No evidence approved yet"
+  },
+  "reports": {
+    "exportPdf": "Export PDF",
+    "exportExcel": "Export Excel",
+    "exporting": "Exporting...",
+    "exportError": "Failed to export report"
   },
   "status": {
     "todo": "Not started",

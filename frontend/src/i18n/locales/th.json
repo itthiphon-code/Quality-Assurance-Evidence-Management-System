@@ -16,7 +16,9 @@
     "noData": "ไม่มีข้อมูล",
     "indicators": "ตัวชี้วัด",
     "evidenceItems": "รายการหลักฐาน",
-    "welcome": "ยินดีต้อนรับ"
+    "welcome": "ยินดีต้อนรับ",
+    "menu": "เมนู",
+    "closeMenu": "ปิดเมนู"
   },
   "theme": {
     "light": "โหมดสว่าง",
@@ -63,6 +65,12 @@
     "noRisk": "ไม่มีรายการที่มีความเสี่ยงในขณะนี้",
     "riskReasonRevise": "มีหลักฐานที่ถูกส่งกลับแก้ไข",
     "riskReasonNoProgress": "ยังไม่มีหลักฐานผ่านการตรวจสอบ"
+  },
+  "reports": {
+    "exportPdf": "ส่งออก PDF",
+    "exportExcel": "ส่งออก Excel",
+    "exporting": "กำลังส่งออก...",
+    "exportError": "ส่งออกรายงานไม่สำเร็จ"
   },
   "status": {
     "todo": "ยังไม่ดำเนินการ",

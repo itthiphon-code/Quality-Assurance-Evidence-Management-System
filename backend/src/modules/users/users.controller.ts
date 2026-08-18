@@ -21,10 +21,12 @@ const userSelect = {
   createdAt: true,
 } as const;
 
+const listUsersQuerySchema = z.object({ role: z.nativeEnum(UserRole).optional() });
+
 // GET /api/users?role=teacher — รายชื่อผู้ใช้ (เฉพาะงานประกันคุณภาพ)
 usersRouter.get("/", async (req, res, next) => {
   try {
-    const role = typeof req.query.role === "string" ? (req.query.role as UserRole) : undefined;
+    const { role } = listUsersQuerySchema.parse(req.query);
     const users = await prisma.user.findMany({
       where: role ? { role } : undefined,
       orderBy: { name: "asc" },

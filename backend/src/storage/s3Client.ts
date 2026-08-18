@@ -53,7 +53,10 @@ export async function deleteObject(key: string): Promise<void> {
   await s3Client.send(new DeleteObjectCommand({ Bucket: EVIDENCE_BUCKET, Key: key }));
 }
 
-export async function getPresignedDownloadUrl(key: string, expiresInSeconds = 300): Promise<string> {
+export async function getPresignedDownloadUrl(
+  key: string,
+  expiresInSeconds = env.minio.presignedUrlExpiresSeconds,
+): Promise<string> {
   const command = new GetObjectCommand({ Bucket: EVIDENCE_BUCKET, Key: key });
   return getSignedUrl(s3Client, command, { expiresIn: expiresInSeconds });
 }

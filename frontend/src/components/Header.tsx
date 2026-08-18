@@ -1,16 +1,29 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../features/auth/authContext";
 import { LangToggle } from "./LangToggle";
+import { MobileNav } from "./MobileNav";
 import { NotificationBell } from "./NotificationBell";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-border bg-surface px-4 shadow-sm sm:px-6">
+    <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-surface px-4 shadow-sm sm:px-6">
       <div className="flex items-center gap-3">
+        {user && (
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen((o) => !o)}
+            aria-label={mobileNavOpen ? t("common.closeMenu") : t("common.menu")}
+            className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-lg md:hidden"
+          >
+            {mobileNavOpen ? "✕" : "☰"}
+          </button>
+        )}
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-tint">
           QA
         </div>
@@ -40,6 +53,8 @@ export function Header() {
           </div>
         )}
       </div>
+
+      <MobileNav open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
     </header>
   );
 }
