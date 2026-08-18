@@ -71,8 +71,19 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    # loopback-only — ไม่เปิดสู่อินเทอร์เน็ตตรง ๆ เพราะ TLS/reverse proxy จริงคือ nginx-proxy-manager
+    # (network "npm" ด้านล่าง) ค่านี้มีไว้สำหรับตรวจสอบจากในเครื่องเซิร์ฟเวอร์เองเท่านั้น
     ports:
-      - "${HTTP_PORT:-80}:80"
+      - "127.0.0.1:${HTTP_PORT:-8080}:80"
+    networks:
+      - default
+      - npm
+
+networks:
+  default:
+  npm:
+    external: true
+    name: nginx-proxy-manager_default
 
 volumes:
   qaems_postgres_data:

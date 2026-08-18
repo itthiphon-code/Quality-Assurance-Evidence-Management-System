@@ -1,5 +1,6 @@
 // ข้อมูลตั้งต้น (seed) — 3 มาตรฐาน, 10 ตัวชี้วัด, หลักฐาน/วิธีเก็บ/แหล่งข้อมูล
 // อ้างอิงจากภาคผนวกใน BUILD_PROMPT.md — ทุกตัวชี้วัดวิธีตรวจเยี่ยม = Virtual Visit
+import { randomBytes } from "node:crypto";
 import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -219,17 +220,30 @@ const demoUsers: { name: string; email: string; role: UserRole; department: stri
 
 const DEMO_PASSWORD = "Passw0rd!";
 
+// เปิดใช้เฉพาะ dev เท่านั้น (ตั้งใน backend/.env ซึ่งไม่ได้ commit) — ห้ามเปิดบน production
+// เพราะรหัสผ่านตัวอย่างนี้ถูกเผยแพร่อยู่ใน README/เอกสารแล้ว
+const SEED_DEMO_USERS = process.env.SEED_DEMO_USERS === "true";
+
+function generateBootstrapPassword(): string {
+  return randomBytes(9).toString("base64url");
+}
+
 async function main() {
-  console.log("Seeding: users...");
-  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
   const users: Record<string, { id: string }> = {};
-  for (const u of demoUsers) {
-    const user = await prisma.user.upsert({
-      where: { email: u.email },
-      update: {},
-      create: { ...u, passwordHash },
-    });
-    users[u.role] = user;
+
+  if (SEED_DEMO_USERS) {
+    console.log("Seeding: demo users (SEED_DEMO_USERS=true)...");
+    const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
+    for (const u of demoUsers) {
+      const user = await prisma.user.upsert({
+        where: { email: u.email },
+        update: {},
+        create: { ...u, passwordHash },
+      });
+      users[u.role] = user;
+    }
+  } else {
+    console.log("Seeding: bootstrap qa account (SEED_DEMO_USERS not set — production mode)...");
   }
 
   console.log("Seeding: standards / indicators / evidence...");
@@ -287,8 +301,8 @@ async function main() {
         })),
       });
 
-      // มอบหมายผู้รับผิดชอบตัวอย่าง: ตัวชี้วัดแรกของแต่ละมาตรฐานมอบให้ครูสาธิต
-      if (ind === std.indicators[0]) {
+      // มอบหมายผู้รับผิดชอบตัวอย่าง: ตัวชี้วัดแรกของแต่ละมาตรฐานมอบให้ครูสาธิต (เฉพาะ dev)
+      if (SEED_DEMO_USERS && ind === std.indicators[0]) {
         await prisma.assignment.upsert({
           where: { userId_indicatorId: { userId: users.teacher.id, indicatorId: indicator.id } },
           update: {},
@@ -299,8 +313,22 @@ async function main() {
   }
 
   console.log("Seed complete.");
-  console.log("Demo accounts (password for all: %s):", DEMO_PASSWORD);
-  demoUsers.forEach((u) => console.log(`  - ${u.role}: ${u.email}`));
+  if (SEED_DEMO_USERS) {
+    console.log("Demo accounts (password for all: %s):", DEMO_PASSWORD);
+    demoUsers.forEach((u) => console.log(`  - ${u.role}: ${u.email}`));
+  } else {
+    const bootstrapEmail = process.env.BOOTSTRAP_QA_EMAIL ?? "qa@qaems.local";
+    const bootstrapPassword = generateBootstrapPassword();
+    const passwordHash = await bcrypt.hash(bootstrapPassword, 10);
+    await prisma.user.upsert({
+      where: { email: bootstrapEmail },
+      update: {},
+      create: { name: "งานประกันคุณภาพ (Bootstrap)", email: bootstrapEmail, role: UserRole.qa, passwordHash },
+    });
+    console.log("Bootstrap qa account created — save this password now, it will not be shown again:");
+    console.log(`  email:    ${bootstrapEmail}`);
+    console.log(`  password: ${bootstrapPassword}`);
+  }
 }
 
 main()
