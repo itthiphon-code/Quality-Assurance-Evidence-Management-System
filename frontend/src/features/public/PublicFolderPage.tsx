@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { CheckCircle2, ClipboardList, LogIn, Target } from "lucide-react";
+import { CheckCircle2, ClipboardList, FileCheck2, LogIn, Target } from "lucide-react";
 import { apiClient } from "../../lib/apiClient";
 import { openPublicAttachment } from "../../lib/attachments";
 import type { DashboardSummary } from "../../lib/useDashboardSummary";
 import { StatusDonutChart } from "../../components/charts/StatusDonutChart";
 import { StandardProgressChart } from "../../components/charts/StandardProgressChart";
+import { StandardComparisonBars } from "../../components/charts/StandardComparisonBars";
 import { IndicatorReadinessTable } from "../../components/IndicatorReadinessTable";
+import { IndicatorReadinessGrid } from "../../components/IndicatorReadinessGrid";
 import { Card } from "../../components/ui/Card";
 import { StatCard } from "../../components/ui/StatCard";
 
@@ -90,7 +92,7 @@ export function PublicFolderPage() {
 
       {summary && (
         <>
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               icon={Target}
               tone="primary"
@@ -111,16 +113,35 @@ export function PublicFolderPage() {
               value={folderQuery.data?.length ?? 3}
               label={t("public.standardsLabel")}
             />
+            <StatCard
+              icon={FileCheck2}
+              tone="success"
+              value={summary.overall.approved}
+              label={t("public.totalDocuments")}
+            />
           </div>
 
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            <Card title={t("dashboard.statusByStandard")}>
-              <StandardProgressChart data={summary.byStandard} />
+            <Card title={t("public.standardComparison")}>
+              <StandardComparisonBars data={summary.byStandard} />
             </Card>
             <Card title={t("dashboard.statusOverall")}>
               <StatusDonutChart counts={summary.overall} />
             </Card>
           </div>
+
+          <div className="mt-4">
+            <Card title={t("dashboard.statusByStandard")}>
+              <StandardProgressChart data={summary.byStandard} />
+            </Card>
+          </div>
+
+          <section className="mt-6">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+              {t("public.indicatorOverview")}
+            </h2>
+            <IndicatorReadinessGrid data={summary.byIndicator} />
+          </section>
 
           <section className="mt-6">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">

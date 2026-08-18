@@ -1,0 +1,32 @@
+import { useTranslation } from "react-i18next";
+import { progressColorClass, progressTextColorClass } from "../lib/progressColor";
+import type { IndicatorReadiness } from "./IndicatorReadinessTable";
+
+// มุมมองแบบ "ตารางความพร้อม" ย่อส่วนเป็นการ์ดสีไล่ระดับ ให้กวาดสายตาดูภาพรวมทั้ง 10 ตัวชี้วัดได้เร็ว
+// เสริมจากตาราง IndicatorReadinessTable แบบละเอียด ไม่ได้แทนที่กัน
+export function IndicatorReadinessGrid({ data }: { data: IndicatorReadiness[] }) {
+  const { i18n } = useTranslation();
+  const isThai = i18n.language?.startsWith("th");
+
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      {data.map((ind) => (
+        <div key={ind.id} className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
+            <span className="inline-flex rounded-md bg-primary-tint px-2 py-0.5 text-xs font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
+              {ind.code}
+            </span>
+            <span className={`text-sm font-bold ${progressTextColorClass(ind.pctComplete)}`}>{ind.pctComplete}%</span>
+          </div>
+          <p className="mt-2 line-clamp-2 h-8 text-xs text-muted">{isThai ? ind.nameTh : ind.nameEn}</p>
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-surface-alt">
+            <div
+              className={`h-full rounded-full transition-all ${progressColorClass(ind.pctComplete)}`}
+              style={{ width: `${ind.pctComplete}%` }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { progressColorClass } from "../lib/progressColor";
 
 export interface IndicatorReadiness {
   id: string;
@@ -10,15 +11,6 @@ export interface IndicatorReadiness {
   approved: number;
   pctComplete: number;
   hasRevise: boolean;
-}
-
-// สีแถบความคืบหน้าไล่ระดับตามเกณฑ์ % ให้เห็นความเสี่ยงแบบเดาสายตาได้ทันที
-// (เขียว = พร้อมแล้ว, ทอง = ใกล้เสร็จ, ส้ม/เหลือง = ปานกลาง, แดง = ยังตามหลังมาก)
-function progressColorClass(pct: number): string {
-  if (pct >= 100) return "bg-status-success";
-  if (pct >= 60) return "bg-accent-gold";
-  if (pct >= 40) return "bg-status-warning";
-  return "bg-status-danger";
 }
 
 interface IndicatorReadinessTableProps {

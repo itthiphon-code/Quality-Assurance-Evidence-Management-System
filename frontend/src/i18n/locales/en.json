@@ -158,7 +158,10 @@
     "title": "Evidence Folder — Ubon Ratchathani Technical College",
     "subtitle": "Readiness stats and approved evidence, open to view without signing in",
     "folderTitle": "Evidence by standard and indicator",
-    "standardsLabel": "Assessment standards"
+    "standardsLabel": "Assessment standards",
+    "totalDocuments": "Published documents",
+    "standardComparison": "Readiness by standard",
+    "indicatorOverview": "Indicator readiness overview"
   },
   "readinessTable": {
     "code": "Code",
