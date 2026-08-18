@@ -41,11 +41,14 @@ function ReviewQueueRow({ item }: { item: ReviewQueueItemDto }) {
   });
 
   return (
-    <li className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-      <div className="text-xs font-medium text-muted">
-        {item.indicator.standard.code} · {item.indicator.code} — {isThai ? item.indicator.nameTh : item.indicator.nameEn}
+    <li className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="inline-flex rounded-md bg-primary-tint px-2 py-0.5 text-xs font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
+          {item.indicator.standard.code} · {item.indicator.code}
+        </span>
+        <span className="text-xs font-medium text-muted">{isThai ? item.indicator.nameTh : item.indicator.nameEn}</span>
       </div>
-      <p className="mt-1 text-sm text-ink">{isThai ? item.descriptionTh : item.descriptionEn}</p>
+      <p className="mt-2 text-sm text-ink">{isThai ? item.descriptionTh : item.descriptionEn}</p>
 
       <ul className="mt-2 space-y-1">
         {item.attachments.map((att) => (
@@ -117,15 +120,29 @@ export function ReviewQueuePage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-      <h1 className="text-xl font-semibold text-ink">{t("reviewQueue.title")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-semibold text-ink">{t("reviewQueue.title")}</h1>
+          <p className="mt-1 text-sm text-muted">{t("reviewQueue.subtitle")}</p>
+        </div>
+        {data && data.length > 0 && (
+          <span className="inline-flex items-center rounded-full bg-status-pending/10 px-3 py-1 text-sm font-semibold text-status-pending">
+            {data.length} {t("common.evidenceItems")}
+          </span>
+        )}
+      </div>
 
       {isLoading && <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>}
       {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
 
-      {data && data.length === 0 && <p className="mt-4 text-sm text-muted">{t("reviewQueue.empty")}</p>}
+      {data && data.length === 0 && (
+        <div className="mt-6 rounded-2xl border border-border bg-surface p-8 text-center shadow-sm">
+          <p className="text-sm text-muted">{t("reviewQueue.empty")}</p>
+        </div>
+      )}
 
       {data && data.length > 0 && (
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-5 space-y-3">
           {data.map((item) => (
             <ReviewQueueRow key={item.id} item={item} />
           ))}

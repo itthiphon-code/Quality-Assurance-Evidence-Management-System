@@ -61,6 +61,7 @@
     "inProgress": "In progress",
     "inProgressSub": "Not yet submitted for review",
     "reviseSub": "Sent back for revision",
+    "readyIndicators": "Ready indicators",
     "riskList": "At-risk items",
     "noRisk": "No at-risk items right now",
     "riskReasonRevise": "Has evidence sent back for revision",
@@ -113,6 +114,7 @@
   },
   "reviewQueue": {
     "title": "Review Queue",
+    "subtitle": "Evidence items waiting for review and approval",
     "empty": "No items pending review",
     "approve": "Approve",
     "revise": "Send back for revision",
