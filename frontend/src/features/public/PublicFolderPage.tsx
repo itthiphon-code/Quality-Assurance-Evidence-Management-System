@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { CheckCircle2, ClipboardList, LogIn, Target } from "lucide-react";
 import { apiClient } from "../../lib/apiClient";
 import { openPublicAttachment } from "../../lib/attachments";
 import type { DashboardSummary } from "../../lib/useDashboardSummary";
 import { StatusDonutChart } from "../../components/charts/StatusDonutChart";
 import { StandardProgressChart } from "../../components/charts/StandardProgressChart";
 import { IndicatorReadinessTable } from "../../components/IndicatorReadinessTable";
+import { Card } from "../../components/ui/Card";
+import { StatCard } from "../../components/ui/StatCard";
 
 interface AttachmentSummary {
   id: string;
@@ -58,57 +61,65 @@ export function PublicFolderPage() {
   const summary = summaryQuery.data;
   const readinessPct =
     summary && summary.overall.total > 0 ? Math.round((summary.overall.approved / summary.overall.total) * 100) : 0;
+  const readyCount = (summary?.byIndicator ?? []).filter((ind) => ind.pctComplete === 100).length;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold text-ink">{t("public.title")}</h1>
-          <p className="mt-1 text-sm text-muted">{t("public.subtitle")}</p>
+      <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-primary-800 to-primary-700 p-6 text-white shadow-sm sm:p-7">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold">{t("public.title")}</h1>
+            <p className="mt-1 text-sm text-white/80">{t("public.subtitle")}</p>
+          </div>
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20"
+          >
+            <LogIn className="h-3.5 w-3.5" />
+            {t("auth.loginButton")}
+          </Link>
         </div>
-        <Link
-          to="/login"
-          className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-tint dark:text-primary dark:hover:bg-surface-alt"
-        >
-          {t("auth.loginButton")}
-        </Link>
       </div>
 
       {(summaryQuery.isLoading || folderQuery.isLoading) && (
-        <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>
+        <p className="mt-6 text-sm text-muted">{t("common.loading")}</p>
       )}
       {(summaryQuery.isError || folderQuery.isError) && (
-        <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>
+        <p className="mt-6 text-sm text-status-danger">{t("common.error")}</p>
       )}
 
       {summary && (
         <>
-          <div className="mt-4 rounded-xl border border-border bg-surface p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-ink">{t("dashboard.overallReadiness")}</span>
-              <span className="text-2xl font-bold text-primary-700 dark:text-primary">{readinessPct}%</span>
-            </div>
-            <div className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-surface-alt">
-              <div className="h-full rounded-full bg-status-success" style={{ width: `${readinessPct}%` }} />
-            </div>
-            <p className="mt-1 text-xs text-muted">
-              {summary.overall.approved}/{summary.overall.total} {t("common.evidenceItems")}
-            </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <StatCard
+              icon={Target}
+              tone="primary"
+              label={t("dashboard.overallReadiness")}
+              value={`${readinessPct}%`}
+              sub={`${summary.overall.approved}/${summary.overall.total} ${t("common.evidenceItems")}`}
+            />
+            <StatCard
+              icon={CheckCircle2}
+              tone="success"
+              label={t("dashboard.readyIndicators")}
+              value={`${readyCount}/${summary.byIndicator.length}`}
+              sub={t("common.indicators")}
+            />
+            <StatCard
+              icon={ClipboardList}
+              tone="primary"
+              value={folderQuery.data?.length ?? 3}
+              label={t("public.standardsLabel")}
+            />
           </div>
 
-          <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-                {t("dashboard.statusByStandard")}
-              </h2>
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <Card title={t("dashboard.statusByStandard")}>
               <StandardProgressChart data={summary.byStandard} />
-            </div>
-            <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-                {t("dashboard.statusOverall")}
-              </h2>
+            </Card>
+            <Card title={t("dashboard.statusOverall")}>
               <StatusDonutChart counts={summary.overall} />
-            </div>
+            </Card>
           </div>
 
           <section className="mt-6">
@@ -130,16 +141,17 @@ export function PublicFolderPage() {
               </h3>
               <div className="space-y-3">
                 {standard.indicators.map((ind) => (
-                  <div key={ind.id} className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <h4 className="text-sm font-medium text-ink">
-                        {ind.code} — {isThai ? ind.nameTh : ind.nameEn}
-                      </h4>
-                      <span className="text-xs text-muted">
+                  <div key={ind.id} className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex rounded-md bg-primary-tint px-2 py-0.5 text-xs font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
+                        {ind.code}
+                      </span>
+                      <h4 className="text-sm font-medium text-ink">{isThai ? ind.nameTh : ind.nameEn}</h4>
+                      <span className="ml-auto text-xs text-muted">
                         {t("assessorFolder.visitMethod")}: {ind.visitMethod}
                       </span>
                     </div>
-                    <div className="mt-1 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
+                    <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
                       {ind.collectionMethods.length > 0 && (
                         <span>
                           {t("indicatorDetail.collectionMethods")}: {ind.collectionMethods.map((m) => m.name).join(", ")}

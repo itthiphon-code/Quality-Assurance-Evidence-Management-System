@@ -56,20 +56,20 @@ function IndicatorRow({ indicator, teachers }: { indicator: IndicatorDto; teache
   const dirty = nameTh !== indicator.nameTh || nameEn !== indicator.nameEn;
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-      <span className="text-xs font-medium text-muted">
+    <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5">
+      <span className="inline-flex rounded-md bg-primary-tint px-2 py-0.5 text-xs font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
         {indicator.standard.code} · {indicator.code}
       </span>
-      <div className="mt-2 grid gap-2 sm:grid-cols-2">
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
         <input
           value={nameTh}
           onChange={(e) => setNameTh(e.target.value)}
-          className="rounded-md border border-border bg-base px-2 py-1.5 text-sm outline-none focus:border-primary"
+          className="rounded-lg border border-border bg-base px-3 py-2 text-sm outline-none focus:border-primary"
         />
         <input
           value={nameEn}
           onChange={(e) => setNameEn(e.target.value)}
-          className="rounded-md border border-border bg-base px-2 py-1.5 text-sm outline-none focus:border-primary"
+          className="rounded-lg border border-border bg-base px-3 py-2 text-sm outline-none focus:border-primary"
         />
       </div>
       {dirty && (
@@ -146,13 +146,16 @@ export function IndicatorsManagementPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
-      <h1 className="text-xl font-semibold text-ink">{t("management.indicators")}</h1>
+      <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-primary-800 to-primary-700 p-6 text-white shadow-sm sm:p-7">
+        <h1 className="text-xl font-semibold">{t("management.indicators")}</h1>
+        <p className="mt-1 text-sm text-white/80">{t("management.indicatorsSubtitle")}</p>
+      </div>
 
       {isLoading && <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>}
       {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
 
       {indicators && (
-        <div className="mt-4 space-y-3">
+        <div className="mt-5 space-y-3">
           {indicators.map((ind) => (
             <IndicatorRow key={ind.id} indicator={ind} teachers={teachers ?? []} />
           ))}

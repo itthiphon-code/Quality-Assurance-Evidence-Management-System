@@ -124,7 +124,9 @@
   },
   "management": {
     "users": "User Management",
+    "usersSubtitle": "Manage user accounts and access",
     "indicators": "Indicator Management",
+    "indicatorsSubtitle": "Edit indicator names and assign owners",
     "createUser": "Add new user",
     "name": "Full name",
     "email": "Email",
@@ -155,7 +157,8 @@
   "public": {
     "title": "Evidence Folder — Ubon Ratchathani Technical College",
     "subtitle": "Readiness stats and approved evidence, open to view without signing in",
-    "folderTitle": "Evidence by standard and indicator"
+    "folderTitle": "Evidence by standard and indicator",
+    "standardsLabel": "Assessment standards"
   },
   "readinessTable": {
     "code": "Code",
