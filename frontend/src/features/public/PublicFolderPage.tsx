@@ -8,7 +8,6 @@ import type { DashboardSummary } from "../../lib/useDashboardSummary";
 import { StatusDonutChart } from "../../components/charts/StatusDonutChart";
 import { StandardProgressChart } from "../../components/charts/StandardProgressChart";
 import { StandardComparisonBars } from "../../components/charts/StandardComparisonBars";
-import { IndicatorReadinessTable } from "../../components/IndicatorReadinessTable";
 import { IndicatorReadinessGrid } from "../../components/IndicatorReadinessGrid";
 import { Card } from "../../components/ui/Card";
 import { StatCard } from "../../components/ui/StatCard";
@@ -141,13 +140,6 @@ export function PublicFolderPage() {
               {t("public.indicatorOverview")}
             </h2>
             <IndicatorReadinessGrid data={summary.byIndicator} />
-          </section>
-
-          <section className="mt-6">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-              {t("dashboard.readinessTable")}
-            </h2>
-            <IndicatorReadinessTable data={summary.byIndicator} />
           </section>
         </>
       )}
