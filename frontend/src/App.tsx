@@ -1,6 +1,8 @@
 import type { Location } from "react-router-dom";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AppLayout } from "./app/AppLayout";
+import { ErrorBoundary } from "./app/ErrorBoundary";
+import { NotFoundPage } from "./app/NotFoundPage";
 import { IndicatorDrawerRoute } from "./app/IndicatorDrawerRoute";
 import { ProtectedRoute } from "./app/ProtectedRoute";
 import { RoleRoute } from "./app/RoleRoute";
@@ -83,8 +85,9 @@ function AppRoutes() {
               </ProtectedRoute>
             }
           />
+          {/* เส้นทางที่ไม่รู้จัก — แสดงหน้า 404 ภายใน AppLayout เพื่อให้ยังมีเมนูให้กลับไปหน้าอื่นได้ */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
       {backgroundLocation && (
@@ -106,13 +109,15 @@ function AppRoutes() {
 export function App() {
   return (
     <ThemeProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </AuthProvider>
-      </ToastProvider>
+      <ErrorBoundary>
+        <ToastProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </AuthProvider>
+        </ToastProvider>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }

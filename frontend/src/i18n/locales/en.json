@@ -20,6 +20,17 @@
     "menu": "Menu",
     "closeMenu": "Close menu"
   },
+  "notFound": {
+    "title": "Page not found",
+    "message": "This page may have been moved or removed, or the address was typed incorrectly.",
+    "backHome": "Back to home"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "message": "The page could not be displayed because of an unexpected error. Please reload; if the problem continues, contact your system administrator.",
+    "reload": "Reload page",
+    "backHome": "Back to home"
+  },
   "toast": {
     "saved": "Changes saved",
     "userCreated": "User created",
