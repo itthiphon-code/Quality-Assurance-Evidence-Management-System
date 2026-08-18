@@ -7,6 +7,7 @@ import { StandardProgressChart } from "../../components/charts/StandardProgressC
 import { IndicatorReadinessTable } from "../../components/IndicatorReadinessTable";
 import { Card } from "../../components/ui/Card";
 import { StatCard } from "../../components/ui/StatCard";
+import { DashboardSkeleton } from "../../components/ui/Skeleton";
 
 export function ExecutiveDashboardPage() {
   const { t, i18n } = useTranslation();
@@ -28,7 +29,7 @@ export function ExecutiveDashboardPage() {
         <p className="mt-1 text-sm text-white/80">{t("dashboard.execWelcome")}</p>
       </div>
 
-      {isLoading && <p className="mt-6 text-sm text-muted">{t("common.loading")}</p>}
+      {isLoading && <DashboardSkeleton />}
       {isError && <p className="mt-6 text-sm text-status-danger">{t("common.error")}</p>}
 
       {data && (

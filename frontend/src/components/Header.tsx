@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { LogOut, Menu, ShieldCheck, X } from "lucide-react";
 import { useAuth } from "../features/auth/authContext";
 import { LangToggle } from "./LangToggle";
 import { MobileNav } from "./MobileNav";
@@ -20,13 +21,13 @@ export function Header() {
             type="button"
             onClick={() => setMobileNavOpen((o) => !o)}
             aria-label={mobileNavOpen ? t("common.closeMenu") : t("common.menu")}
-            className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-lg md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted transition-colors hover:bg-surface-alt hover:text-ink md:hidden"
           >
-            {mobileNavOpen ? "✕" : "☰"}
+            {mobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         )}
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-tint">
-          QA
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary-700 to-primary-800 text-primary-tint shadow-sm">
+          <ShieldCheck className="h-5 w-5" />
         </div>
         <div className="leading-tight">
           <div className="text-sm font-semibold text-ink">{t("app.fullTitle")}</div>
@@ -47,8 +48,9 @@ export function Header() {
             <button
               type="button"
               onClick={logout}
-              className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-tint dark:hover:bg-surface-alt"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-tint dark:text-primary dark:hover:bg-surface-alt"
             >
+              <LogOut className="h-3.5 w-3.5" />
               {t("common.logout")}
             </button>
           </div>

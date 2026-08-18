@@ -6,6 +6,7 @@ import { apiClient } from "../../lib/apiClient";
 import { StatusBadge } from "../../components/StatusBadge";
 import { useAuth } from "../auth/authContext";
 import { StatCard } from "../../components/ui/StatCard";
+import { ListSkeleton } from "../../components/ui/Skeleton";
 
 interface EvidenceSummary {
   id: string;
@@ -56,7 +57,7 @@ export function MyWorkPage() {
         <p className="mt-1 text-sm text-white/80">{t("myWork.subtitle")}</p>
       </div>
 
-      {isLoading && <p className="mt-6 text-sm text-muted">{t("common.loading")}</p>}
+      {isLoading && <ListSkeleton rows={4} />}
       {isError && <p className="mt-6 text-sm text-status-danger">{t("common.error")}</p>}
 
       {data && (

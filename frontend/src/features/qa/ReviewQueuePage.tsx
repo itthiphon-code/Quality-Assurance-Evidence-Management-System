@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { apiClient } from "../../lib/apiClient";
 import { openAttachment } from "../../lib/attachments";
+import { AttachmentIcon } from "../../components/AttachmentIcon";
+import { ListSkeleton } from "../../components/ui/Skeleton";
 
 interface AttachmentDto {
   id: string;
@@ -53,9 +55,17 @@ function ReviewQueueRow({ item }: { item: ReviewQueueItemDto }) {
       <ul className="mt-2 space-y-1">
         {item.attachments.map((att) => (
           <li key={att.id} className="flex items-center justify-between rounded-md bg-surface-alt px-3 py-1.5 text-xs">
-            <span className="truncate">
-              {att.type === "drive_link" ? "🔗" : "📄"} {att.filename}
-              {att.uploadedBy && <span className="text-muted"> — {t("reviewQueue.submittedBy")} {att.uploadedBy.name}</span>}
+            <span className="flex min-w-0 items-center gap-1.5">
+              <AttachmentIcon type={att.type} />
+              <span className="truncate">
+                {att.filename}
+                {att.uploadedBy && (
+                  <span className="text-muted">
+                    {" "}
+                    — {t("reviewQueue.submittedBy")} {att.uploadedBy.name}
+                  </span>
+                )}
+              </span>
             </span>
             <button type="button" onClick={() => openAttachment(att.id)} className="shrink-0 text-primary-700 underline dark:text-primary">
               {t("indicatorDetail.open")}
@@ -132,7 +142,7 @@ export function ReviewQueuePage() {
         )}
       </div>
 
-      {isLoading && <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>}
+      {isLoading && <ListSkeleton rows={3} />}
       {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
 
       {data && data.length === 0 && (

@@ -9,8 +9,10 @@ import { StatusDonutChart } from "../../components/charts/StatusDonutChart";
 import { StandardProgressChart } from "../../components/charts/StandardProgressChart";
 import { StandardComparisonBars } from "../../components/charts/StandardComparisonBars";
 import { IndicatorReadinessGrid } from "../../components/IndicatorReadinessGrid";
+import { AttachmentIcon } from "../../components/AttachmentIcon";
 import { Card } from "../../components/ui/Card";
 import { StatCard } from "../../components/ui/StatCard";
+import { DashboardSkeleton } from "../../components/ui/Skeleton";
 
 interface AttachmentSummary {
   id: string;
@@ -79,9 +81,7 @@ export function PublicFolderPage() {
       </div>
       <p className="mt-3 text-sm text-muted">{t("public.subtitle")}</p>
 
-      {(summaryQuery.isLoading || folderQuery.isLoading) && (
-        <p className="mt-6 text-sm text-muted">{t("common.loading")}</p>
-      )}
+      {(summaryQuery.isLoading || folderQuery.isLoading) && <DashboardSkeleton />}
       {(summaryQuery.isError || folderQuery.isError) && (
         <p className="mt-6 text-sm text-status-danger">{t("common.error")}</p>
       )}
@@ -178,9 +178,10 @@ export function PublicFolderPage() {
                             <p className="text-sm text-ink">{isThai ? ev.descriptionTh : ev.descriptionEn}</p>
                             <ul className="mt-2 space-y-1">
                               {ev.attachments.map((att) => (
-                                <li key={att.id} className="flex items-center justify-between text-xs">
-                                  <span className="truncate">
-                                    {att.type === "drive_link" ? "🔗" : "📄"} {att.filename}
+                                <li key={att.id} className="flex items-center justify-between gap-2 text-xs">
+                                  <span className="flex min-w-0 items-center gap-1.5">
+                                    <AttachmentIcon type={att.type} />
+                                    <span className="truncate">{att.filename}</span>
                                   </span>
                                   <button
                                     type="button"

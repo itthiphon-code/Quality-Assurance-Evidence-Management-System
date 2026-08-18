@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { apiClient } from "../../lib/apiClient";
+import { ListSkeleton } from "../../components/ui/Skeleton";
 
 interface AssignmentDto {
   user: { id: string; name: string; email: string };
@@ -151,7 +152,7 @@ export function IndicatorsManagementPage() {
         <p className="mt-1 text-sm text-white/80">{t("management.indicatorsSubtitle")}</p>
       </div>
 
-      {isLoading && <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>}
+      {isLoading && <ListSkeleton rows={5} />}
       {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
 
       {indicators && (

@@ -6,6 +6,8 @@ import { AxiosError } from "axios";
 import { KeyRound, Pencil, UserPlus, X } from "lucide-react";
 import { apiClient } from "../../lib/apiClient";
 import { Card } from "../../components/ui/Card";
+import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
+import { ListSkeleton } from "../../components/ui/Skeleton";
 import type { UserRole } from "../auth/authContext";
 
 interface UserDto {
@@ -86,6 +88,7 @@ function UserRow({
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
+  const [confirmingReset, setConfirmingReset] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: user.name,
@@ -115,7 +118,10 @@ function UserRow({
 
   const resetPassword = useMutation({
     mutationFn: () => apiClient.post(`/users/${user.id}/reset-password`),
-    onSuccess: (res) => onPasswordReset(res.data.email, res.data.tempPassword),
+    onSuccess: (res) => {
+      setConfirmingReset(false);
+      onPasswordReset(res.data.email, res.data.tempPassword);
+    },
   });
 
   const startEdit = () => {
@@ -228,15 +234,23 @@ function UserRow({
           <button
             type="button"
             disabled={resetPassword.isPending}
-            onClick={() => {
-              if (window.confirm(t("management.resetPasswordConfirm"))) resetPassword.mutate();
-            }}
+            onClick={() => setConfirmingReset(true)}
             title={t("management.resetPassword")}
             className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-surface-alt hover:text-ink disabled:opacity-50"
           >
             <KeyRound className="h-3.5 w-3.5" />
             {t("management.resetPassword")}
           </button>
+          {confirmingReset && (
+            <ConfirmDialog
+              tone="danger"
+              title={t("management.resetPassword")}
+              message={t("management.resetPasswordConfirm")}
+              confirmLabel={t("management.resetPassword")}
+              onConfirm={() => resetPassword.mutate()}
+              onCancel={() => setConfirmingReset(false)}
+            />
+          )}
           <button
             type="button"
             onClick={() => toggleStatus.mutate()}
@@ -302,7 +316,7 @@ export function UsersManagementPage() {
         </div>
       )}
 
-      {isLoading && <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>}
+      {isLoading && <ListSkeleton rows={4} />}
       {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
 
       {data && (

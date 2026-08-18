@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { AttachmentIcon } from "./AttachmentIcon";
+import { Skeleton } from "./ui/Skeleton";
 import { AttachmentUploader } from "./AttachmentUploader";
 import { StatusBadge } from "./StatusBadge";
 import { openAttachment } from "../lib/attachments";
@@ -85,8 +87,9 @@ function EvidenceItemCard({ indicatorId, evidence }: { indicatorId: string; evid
         <ul className="mt-3 space-y-1.5">
           {evidence.attachments.map((att) => (
             <li key={att.id} className="flex items-center justify-between rounded-md bg-surface-alt px-3 py-1.5 text-xs">
-              <span className="truncate">
-                {att.type === "drive_link" ? "🔗" : "📄"} {att.filename}
+              <span className="flex min-w-0 items-center gap-1.5">
+                <AttachmentIcon type={att.type} />
+                <span className="truncate">{att.filename}</span>
               </span>
               <span className="flex shrink-0 gap-2">
                 <button type="button" onClick={() => openAttachment(att.id)} className="text-primary-700 underline dark:text-primary">
@@ -142,7 +145,14 @@ export function IndicatorDetailBody({ id }: { id: string }) {
 
   return (
     <>
-      {isLoading && <p className="text-sm text-muted">{t("common.loading")}</p>}
+      {isLoading && (
+        <div className="space-y-3">
+          <Skeleton className="h-6 w-2/3" />
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-28 rounded-xl" />
+          <Skeleton className="h-28 rounded-xl" />
+        </div>
+      )}
       {isError && <p className="text-sm text-status-danger">{t("common.error")}</p>}
 
       {data && (

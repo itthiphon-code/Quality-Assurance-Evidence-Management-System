@@ -24,30 +24,38 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
       <button type="button" aria-hidden="true" tabIndex={-1} className="absolute inset-0 bg-black/40" onClick={onClose} />
       <nav className="relative border-b border-border bg-surface p-3 shadow-lg">
         <ul className="space-y-1">
-          {items.map((item) =>
-            item.to ? (
+          {items.map((item) => {
+            const Icon = item.icon;
+            return item.to ? (
               <li key={item.labelKey}>
                 <NavLink
                   to={item.to}
                   end={item.to === "/"}
                   onClick={onClose}
                   className={({ isActive }) =>
-                    isActive
-                      ? "block rounded-md bg-primary-tint px-3 py-2 text-sm font-medium text-primary-700 dark:bg-surface-alt dark:text-primary"
-                      : "block rounded-md px-3 py-2 text-sm text-ink hover:bg-surface-alt"
+                    `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      isActive
+                        ? "bg-primary-tint font-medium text-primary-700 dark:bg-surface-alt dark:text-primary"
+                        : "text-ink hover:bg-surface-alt"
+                    }`
                   }
                 >
+                  <Icon className="h-4 w-4 shrink-0" />
                   {t(item.labelKey)}
                 </NavLink>
               </li>
             ) : (
               <li key={item.labelKey}>
-                <div aria-disabled className="cursor-not-allowed rounded-md px-3 py-2 text-sm text-muted opacity-60">
+                <div
+                  aria-disabled
+                  className="flex cursor-not-allowed items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted opacity-60"
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
                   {t(item.labelKey)}
                 </div>
               </li>
-            ),
-          )}
+            );
+          })}
         </ul>
       </nav>
     </div>

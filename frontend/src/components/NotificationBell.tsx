@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { Bell } from "lucide-react";
 import { apiClient } from "../lib/apiClient";
 import { useAuth } from "../features/auth/authContext";
 
@@ -35,9 +36,9 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label={t("notifications.title")}
-        className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border text-base transition-colors hover:bg-surface-alt"
+        className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition-colors hover:bg-surface-alt hover:text-ink"
       >
-        🔔
+        <Bell className="h-4 w-4" />
         {items.length > 0 && (
           <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-status-danger text-[10px] font-semibold text-white">
             {items.length > 9 ? "9+" : items.length}
