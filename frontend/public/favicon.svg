@@ -1,4 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#8C0B0B" />
-  <text x="16" y="22" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#F7E7E7" text-anchor="middle">Q</text>
+  <!-- ตราโล่ให้ตรงกับไอคอนบนหัวเว็บ (lucide shield-check) -->
+  <rect width="32" height="32" rx="7" fill="#6A040F" />
+  <path
+    d="M16 7.5 22.5 10v5.2c0 4-2.7 6.9-6.5 8.3-3.8-1.4-6.5-4.3-6.5-8.3V10L16 7.5Z"
+    fill="none"
+    stroke="#F7E7E7"
+    stroke-width="1.9"
+    stroke-linejoin="round"
+  />
+  <path d="m13.2 15.6 2 2 3.6-3.9" fill="none" stroke="#F7E7E7" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
 </svg>

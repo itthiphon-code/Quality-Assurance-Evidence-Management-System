@@ -95,7 +95,6 @@
   "dashboard": {
     "qaWelcome": "Evidence review overview",
     "execWelcome": "Overall audit-readiness overview",
-    "standardsOverview": "Standards & indicators overview (seed data)",
     "pendingReview": "Items pending review",
     "goToReviewQueue": "Go to review queue",
     "statusByStandard": "Evidence status by standard",
@@ -129,15 +128,12 @@
     "subtitle": "Indicators assigned to you",
     "needsRevision": "Items needing revision",
     "noNeedsRevision": "Nothing needs revision right now",
-    "noAssignments": "No indicators assigned yet",
-    "progressLabel": "Progress",
-    "viewDetail": "View detail"
+    "noAssignments": "No indicators assigned yet"
   },
   "indicatorDetail": {
     "title": "Indicator Detail",
     "back": "Back to My Work",
     "evidenceChecklist": "Evidence checklist",
-    "attachments": "Attachments",
     "uploadFile": "Upload file",
     "attachLink": "Attach Google Drive link",
     "driveLinkUrl": "Google Drive link",
@@ -153,8 +149,6 @@
     "collectionMethods": "Collection methods",
     "dataSources": "Data sources",
     "owner": "Responsible unit",
-    "assignedTo": "Assigned to",
-    "uploadedBy": "Uploaded by",
     "multiFileHint": "You can select several files at once (max 50MB each)",
     "uploadingProgress": "Uploading {{current}}/{{total}}...",
     "uploadPartialFailed": "{{n}} file(s) failed to upload",

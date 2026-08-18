@@ -95,7 +95,6 @@
   "dashboard": {
     "qaWelcome": "ภาพรวมการตรวจสอบหลักฐาน",
     "execWelcome": "ภาพรวมความพร้อมรับการตรวจเยี่ยม",
-    "standardsOverview": "ภาพรวมมาตรฐานและตัวชี้วัด (ข้อมูลตั้งต้น)",
     "pendingReview": "รายการรอตรวจสอบ",
     "goToReviewQueue": "ไปที่คิวตรวจสอบ",
     "statusByStandard": "สถานะหลักฐานรายมาตรฐาน",
@@ -129,15 +128,12 @@
     "subtitle": "ตัวชี้วัดที่ท่านได้รับมอบหมาย",
     "needsRevision": "รายการที่ต้องแก้ไข",
     "noNeedsRevision": "ไม่มีรายการที่ต้องแก้ไขในขณะนี้",
-    "noAssignments": "ยังไม่มีตัวชี้วัดที่ได้รับมอบหมาย",
-    "progressLabel": "ความคืบหน้า",
-    "viewDetail": "ดูรายละเอียด"
+    "noAssignments": "ยังไม่มีตัวชี้วัดที่ได้รับมอบหมาย"
   },
   "indicatorDetail": {
     "title": "รายละเอียดตัวชี้วัด",
     "back": "กลับไปหน้างานของฉัน",
     "evidenceChecklist": "รายการหลักฐาน",
-    "attachments": "เอกสารแนบ",
     "uploadFile": "อัปโหลดไฟล์",
     "attachLink": "แนบลิงก์ Google Drive",
     "driveLinkUrl": "ลิงก์ Google Drive",
@@ -153,8 +149,6 @@
     "collectionMethods": "วิธีเก็บข้อมูล",
     "dataSources": "แหล่งข้อมูล",
     "owner": "หน่วยงานรับผิดชอบ",
-    "assignedTo": "ผู้รับผิดชอบ",
-    "uploadedBy": "อัปโหลดโดย",
     "multiFileHint": "เลือกได้หลายไฟล์พร้อมกัน (สูงสุดไฟล์ละ 50MB)",
     "uploadingProgress": "กำลังอัปโหลด {{current}}/{{total}}...",
     "uploadPartialFailed": "อัปโหลดไม่สำเร็จ {{n}} ไฟล์",

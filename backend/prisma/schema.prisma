@@ -45,6 +45,9 @@ model User {
   role         UserRole
   department   String?
   isActive     Boolean      @default(true)
+  // เวลาที่ผู้ใช้เปิดดูการแจ้งเตือนล่าสุด — ใช้นับเฉพาะรายการที่ใหม่กว่านี้เป็น "ยังไม่อ่าน"
+  // (การแจ้งเตือนสร้างจาก ReviewLog โดยตรง ไม่มีตารางแยก จึงเก็บเวลาที่อ่านไว้ที่ผู้ใช้แทน)
+  notificationsReadAt DateTime?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 

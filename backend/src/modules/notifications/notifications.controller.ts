@@ -38,7 +38,28 @@ notificationsRouter.get("/", async (req, res, next) => {
       });
     }
 
-    res.json(logs);
+    const user = await prisma.user.findUnique({
+      where: { id: sub },
+      select: { notificationsReadAt: true },
+    });
+    const readAt = user?.notificationsReadAt;
+    // ยังไม่เคยเปิดดูเลย = ถือว่ายังไม่อ่านทั้งหมด
+    const unreadCount = readAt ? logs.filter((log) => log.createdAt > readAt).length : logs.length;
+
+    res.json({ items: logs, unreadCount });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/notifications/read — บันทึกว่าเปิดดูการแจ้งเตือนแล้ว (ล้างตัวเลขบนกระดิ่ง)
+notificationsRouter.post("/read", async (req, res, next) => {
+  try {
+    await prisma.user.update({
+      where: { id: req.user!.sub },
+      data: { notificationsReadAt: new Date() },
+    });
+    res.json({ ok: true });
   } catch (err) {
     next(err);
   }

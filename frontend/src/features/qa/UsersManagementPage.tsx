@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { AxiosError } from "axios";
-import { KeyRound, Pencil, UserPlus, X } from "lucide-react";
+import { KeyRound, Pencil, Search, UserPlus, X } from "lucide-react";
 import { apiClient } from "../../lib/apiClient";
 import { Card } from "../../components/ui/Card";
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
@@ -283,11 +283,22 @@ export function UsersManagementPage() {
   const [passwordNotice, setPasswordNotice] = useState<{ email: string; password: string; isReset: boolean } | null>(
     null,
   );
+  const [search, setSearch] = useState("");
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["users"],
     queryFn: async () => (await apiClient.get<UserDto[]>("/users")).data,
   });
+
+  // กรองฝั่งหน้าเว็บได้เพราะรายชื่อผู้ใช้ของวิทยาลัยมีจำนวนไม่มาก โหลดมาครบอยู่แล้วในคำขอเดียว
+  const q = search.trim().toLowerCase();
+  const visible = (data ?? []).filter(
+    (u) =>
+      !q ||
+      u.name.toLowerCase().includes(q) ||
+      u.email.toLowerCase().includes(q) ||
+      (u.department ?? "").toLowerCase().includes(q),
+  );
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
@@ -328,11 +339,24 @@ export function UsersManagementPage() {
         </div>
       )}
 
+      {data && data.length > 0 && (
+        <div className="relative mt-5">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("common.search")}
+            className="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm outline-none transition-colors focus:border-primary sm:max-w-xs"
+          />
+        </div>
+      )}
+
       {isLoading && <ListSkeleton rows={4} />}
       {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
 
       {data && (
-        <div className="mt-5 overflow-x-auto rounded-2xl border border-border bg-surface shadow-sm">
+        <div className="mt-3 overflow-x-auto rounded-2xl border border-border bg-surface shadow-sm">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <tr>
@@ -345,7 +369,14 @@ export function UsersManagementPage() {
               </tr>
             </thead>
             <tbody>
-              {data.map((user) => (
+              {visible.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-muted">
+                    {t("common.noData")}
+                  </td>
+                </tr>
+              )}
+              {visible.map((user) => (
                 <UserRow
                   key={user.id}
                   user={user}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Bell } from "lucide-react";
 import { apiClient } from "../lib/apiClient";
@@ -13,35 +13,54 @@ interface NotificationDto {
   evidence: { indicator: { code: string; nameTh: string; nameEn: string } };
 }
 
+interface NotificationsResponse {
+  items: NotificationDto[];
+  unreadCount: number;
+}
+
 export function NotificationBell() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const isThai = i18n.language?.startsWith("th");
   const [open, setOpen] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["notifications"],
-    queryFn: async () => (await apiClient.get<NotificationDto[]>("/notifications")).data,
+    queryFn: async () => (await apiClient.get<NotificationsResponse>("/notifications")).data,
     enabled: user?.role === "teacher" || user?.role === "qa",
     refetchInterval: 60_000,
   });
 
+  const markRead = useMutation({
+    mutationFn: () => apiClient.post("/notifications/read"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+
   if (user?.role !== "teacher" && user?.role !== "qa") return null;
 
-  const items = data ?? [];
+  const items = data?.items ?? [];
+  const unread = data?.unreadCount ?? 0;
+
+  const toggle = () => {
+    const next = !open;
+    setOpen(next);
+    // เปิดดูแล้วถือว่าอ่านแล้ว — ตัวเลขบนกระดิ่งจะลดลง ไม่ค้างอยู่ตลอดจนผู้ใช้ชินและเมินไป
+    if (next && unread > 0) markRead.mutate();
+  };
 
   return (
     <div className="relative">
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={toggle}
         aria-label={t("notifications.title")}
         className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition-colors hover:bg-surface-alt hover:text-ink"
       >
         <Bell className="h-4 w-4" />
-        {items.length > 0 && (
+        {unread > 0 && (
           <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-status-danger text-[10px] font-semibold text-white">
-            {items.length > 9 ? "9+" : items.length}
+            {unread > 9 ? "9+" : unread}
           </span>
         )}
       </button>

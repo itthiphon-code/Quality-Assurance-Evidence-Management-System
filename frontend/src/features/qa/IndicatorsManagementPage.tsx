@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { Search } from "lucide-react";
 import { apiClient } from "../../lib/apiClient";
 import { ListSkeleton } from "../../components/ui/Skeleton";
 import { useToast } from "../../components/ui/ToastProvider";
@@ -146,6 +147,7 @@ function IndicatorRow({ indicator, teachers }: { indicator: IndicatorDto; teache
 
 export function IndicatorsManagementPage() {
   const { t } = useTranslation();
+  const [search, setSearch] = useState("");
 
   const { data: indicators, isLoading, isError } = useQuery({
     queryKey: ["indicators", "all"],
@@ -157,6 +159,15 @@ export function IndicatorsManagementPage() {
     queryFn: async () => (await apiClient.get<TeacherDto[]>("/users?role=teacher")).data,
   });
 
+  const q = search.trim().toLowerCase();
+  const visible = (indicators ?? []).filter(
+    (ind) =>
+      !q ||
+      ind.code.toLowerCase().includes(q) ||
+      ind.nameTh.toLowerCase().includes(q) ||
+      ind.nameEn.toLowerCase().includes(q),
+  );
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
       <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-primary-800 to-primary-700 p-6 text-white shadow-sm sm:p-7">
@@ -164,12 +175,26 @@ export function IndicatorsManagementPage() {
         <p className="mt-1 text-sm text-white/80">{t("management.indicatorsSubtitle")}</p>
       </div>
 
+      {indicators && (
+        <div className="relative mt-5">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t("common.search")}
+            className="w-full rounded-lg border border-border bg-surface py-2 pl-9 pr-3 text-sm outline-none transition-colors focus:border-primary sm:max-w-xs"
+          />
+        </div>
+      )}
+
       {isLoading && <ListSkeleton rows={5} />}
       {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
 
       {indicators && (
-        <div className="mt-5 space-y-3">
-          {indicators.map((ind) => (
+        <div className="mt-3 space-y-3">
+          {visible.length === 0 && <p className="text-sm text-muted">{t("common.noData")}</p>}
+          {visible.map((ind) => (
             <IndicatorRow key={ind.id} indicator={ind} teachers={teachers ?? []} />
           ))}
         </div>
