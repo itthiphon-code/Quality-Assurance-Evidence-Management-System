@@ -66,21 +66,18 @@ export function PublicFolderPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-primary-800 to-primary-700 p-6 text-white shadow-sm sm:p-7">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-xl font-semibold">{t("public.title")}</h1>
-            <p className="mt-1 text-sm text-white/80">{t("public.subtitle")}</p>
-          </div>
-          <Link
-            to="/login"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20"
-          >
-            <LogIn className="h-3.5 w-3.5" />
-            {t("auth.loginButton")}
-          </Link>
-        </div>
+      <div className="relative overflow-hidden rounded-2xl shadow-sm">
+        <h1 className="sr-only">{t("public.title")}</h1>
+        <img src="/hero-banner.png" alt={t("public.title")} className="h-auto w-full object-cover" />
+        <Link
+          to="/login"
+          className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-lg border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/20 sm:right-6 sm:top-6"
+        >
+          <LogIn className="h-3.5 w-3.5" />
+          {t("auth.loginButton")}
+        </Link>
       </div>
+      <p className="mt-3 text-sm text-muted">{t("public.subtitle")}</p>
 
       {(summaryQuery.isLoading || folderQuery.isLoading) && (
         <p className="mt-6 text-sm text-muted">{t("common.loading")}</p>
