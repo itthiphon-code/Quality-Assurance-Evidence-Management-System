@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: qaems-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-qaems}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-qaems_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-qaems}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - qaems_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-qaems} -d ${POSTGRES_DB:-qaems}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: qaems-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-qaems_minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-qaems_minio_password}
+    command: server /data --console-address ":9001"
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - qaems_minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  qaems_postgres_data:
+  qaems_minio_data:

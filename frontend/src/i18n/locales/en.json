@@ -1,0 +1,59 @@
+{
+  "app": {
+    "title": "QA-EMS",
+    "fullTitle": "Quality-Assurance Evidence Management System",
+    "orgName": "Ubon Ratchathani Technical College",
+    "orgSubtitle": "External Vocational Education Quality Assessment (ONESQA) — 2024–2028 Cycle"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "logout": "Log out",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "search": "Search",
+    "noData": "No data",
+    "indicators": "Indicators",
+    "evidenceItems": "Evidence items",
+    "welcome": "Welcome"
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "toggle": "Toggle theme"
+  },
+  "language": {
+    "toggle": "Switch language",
+    "th": "Thai",
+    "en": "English"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Sign in",
+    "invalidCredentials": "Invalid email or password",
+    "demoAccounts": "Demo accounts (same password for all)"
+  },
+  "role": {
+    "teacher": "Teacher / Responsible Staff",
+    "qa": "Quality Assurance Office",
+    "assessor": "External Assessor (ONESQA)",
+    "exec": "School Executive"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "myWork": "My Work",
+    "reviewQueue": "Review Queue",
+    "assessorFolder": "Evidence Folder",
+    "management": "System Management"
+  },
+  "dashboard": {
+    "teacherWelcome": "Your assigned indicators will appear here (coming in the next phase)",
+    "qaWelcome": "Overview dashboard and review queue coming in the next phase",
+    "assessorWelcome": "Read-only evidence folder coming in the next phase",
+    "execWelcome": "Executive readiness dashboard coming in the next phase",
+    "standardsOverview": "Standards & indicators overview (seed data)"
+  }
+}

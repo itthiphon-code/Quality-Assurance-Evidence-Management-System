@@ -1,0 +1,181 @@
+// QA-EMS — สคีมาฐานข้อมูลระบบจัดเก็บหลักฐานประกันคุณภาพ
+// วิทยาลัยเทคนิคอุบลราชธานี — สมศ. รอบ พ.ศ. 2567–2571
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  teacher // ครู / ผู้รับผิดชอบงาน
+  qa // งานประกันคุณภาพ (หลังบ้าน / Admin)
+  assessor // ผู้ประเมินภายนอก สมศ. (อ่านอย่างเดียว)
+  exec // ผู้บริหารสถานศึกษา (อ่านอย่างเดียว)
+}
+
+enum EvidenceStatus {
+  todo // ยังไม่ดำเนินการ
+  progress // กำลังรวบรวม
+  review // ส่งแล้ว รอตรวจ
+  approved // ผ่านการตรวจสอบ
+  revise // ต้องแก้ไข
+}
+
+enum AttachmentType {
+  file
+  drive_link
+}
+
+enum ReviewAction {
+  submit
+  approve
+  revise
+  comment
+}
+
+model User {
+  id           String       @id @default(uuid())
+  name         String
+  email        String       @unique
+  passwordHash String
+  role         UserRole
+  department   String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  assignments     Assignment[]
+  ownedIndicators Indicator[]  @relation("IndicatorOwner")
+  uploads         Attachment[] @relation("AttachmentUploadedBy")
+  reviewLogs      ReviewLog[]  @relation("ReviewLogReviewer")
+  auditLogs       AuditLog[]
+
+  @@map("users")
+}
+
+model Standard {
+  id         String      @id @default(uuid())
+  code       String      @unique
+  nameTh     String
+  nameEn     String
+  indicators Indicator[]
+
+  @@map("standards")
+}
+
+model Indicator {
+  id          String   @id @default(uuid())
+  standardId  String
+  standard    Standard @relation(fields: [standardId], references: [id], onDelete: Cascade)
+  code        String   @unique
+  nameTh      String
+  nameEn      String
+  visitMethod String   @default("Virtual Visit")
+  // หน่วยงาน/ผู้รับผิดชอบหลักตามภาคผนวก (ข้อความอิสระ เช่น "งานวัดผลและประเมินผล")
+  // แยกจาก Assignment (N:M) ซึ่งใช้มอบหมายผู้ปฏิบัติงานจริงในระบบ
+  ownerDepartment String?
+  ownerId         String?
+  owner           User?    @relation("IndicatorOwner", fields: [ownerId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  evidenceItems     EvidenceItem[]
+  collectionMethods CollectionMethod[]
+  dataSources       DataSource[]
+  assignments       Assignment[]
+
+  @@map("indicators")
+}
+
+model Assignment {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  indicatorId String
+  indicator   Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([userId, indicatorId])
+  @@map("assignments")
+}
+
+model EvidenceItem {
+  id            String         @id @default(uuid())
+  indicatorId   String
+  indicator     Indicator      @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  order         Int
+  descriptionTh String
+  descriptionEn String
+  status        EvidenceStatus @default(todo)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  attachments Attachment[]
+  reviewLogs  ReviewLog[]
+
+  @@map("evidence_items")
+}
+
+model Attachment {
+  id           String         @id @default(uuid())
+  evidenceId   String
+  evidence     EvidenceItem   @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  type         AttachmentType
+  filename     String
+  url          String // storage key (type=file) หรือ Google Drive URL (type=drive_link)
+  size         Int? // bytes, เฉพาะ type=file
+  uploadedById String
+  uploadedBy   User           @relation("AttachmentUploadedBy", fields: [uploadedById], references: [id])
+  uploadedAt   DateTime       @default(now())
+
+  @@map("attachments")
+}
+
+model CollectionMethod {
+  id          String    @id @default(uuid())
+  indicatorId String
+  indicator   Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  name        String
+
+  @@map("collection_methods")
+}
+
+model DataSource {
+  id          String    @id @default(uuid())
+  indicatorId String
+  indicator   Indicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+  name        String
+
+  @@map("data_sources")
+}
+
+model ReviewLog {
+  id         String       @id @default(uuid())
+  evidenceId String
+  evidence   EvidenceItem @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  reviewerId String
+  reviewer   User         @relation("ReviewLogReviewer", fields: [reviewerId], references: [id])
+  action     ReviewAction
+  note       String?
+  createdAt  DateTime     @default(now())
+
+  @@map("review_logs")
+}
+
+// เพิ่มเติมนอกเหนือตารางในสเปก — รองรับข้อกำหนด Audit Log
+// (ใครอัปโหลด/อนุมัติ/เปิดดูเมื่อใด) ตามหัวข้อ Non-functional
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String // e.g. "upload", "approve", "revise", "view", "login", "export"
+  entityType String // e.g. "EvidenceItem", "Attachment"
+  entityId   String?
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@map("audit_logs")
+}

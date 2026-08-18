@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* แบรนด์: แดงเลือดนก (Crimson / Oxblood) — ตามข้อกำหนดการออกแบบ */
+  --primary: #8c0b0b;
+  --primary-600: #a4161a;
+  --primary-700: #6a040f;
+  --primary-800: #4e0308;
+  --primary-tint: #f7e7e7;
+  --accent-gold: #c9a24b;
+
+  /* สีสถานะ (แตกต่างจากสีแบรนด์เพื่อไม่ให้สับสน) */
+  --status-success: #1a7f37;
+  --status-pending: #2563eb;
+  --status-warning: #d97706;
+  --status-danger: #dc2626;
+
+  /* พื้นผิว/ตัวอักษร โหมดสว่าง */
+  --bg: #faf7f5;
+  --surface: #ffffff;
+  --surface-alt: #f4eeee;
+  --text: #1f1315;
+  --text-muted: #5b4a4c;
+  --border-color: #e5d9da;
+}
+
+:root.dark {
+  /* ปรับความสว่างของแดงเลือดนกให้อ่านง่ายบนพื้นเข้ม แต่ยังคงเป็นสีแบรนด์ */
+  --primary: #d8434a;
+  --primary-600: #e05c62;
+  --primary-700: #a4161a;
+  --primary-800: #6a040f;
+  --primary-tint: #3a1417;
+  --accent-gold: #d8b365;
+
+  --status-success: #3fb950;
+  --status-pending: #58a6ff;
+  --status-warning: #e3a008;
+  --status-danger: #f85149;
+
+  --bg: #16100f;
+  --surface: #211719;
+  --surface-alt: #2b1e20;
+  --text: #f3e9ea;
+  --text-muted: #c7b3b5;
+  --border-color: #3d2b2e;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}

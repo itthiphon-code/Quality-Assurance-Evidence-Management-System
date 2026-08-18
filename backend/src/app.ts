@@ -1,0 +1,26 @@
+import cors from "cors";
+import express from "express";
+import helmet from "helmet";
+import { env } from "./config/env";
+import { errorHandler } from "./middleware/errorHandler";
+import { authRouter } from "./modules/auth/auth.controller";
+import { standardsRouter } from "./modules/standards/standards.controller";
+
+export const app = express();
+
+app.use(helmet());
+app.use(cors({ origin: env.corsOrigin, credentials: true }));
+app.use(express.json());
+
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+app.use("/api/auth", authRouter);
+app.use("/api/standards", standardsRouter);
+
+app.use((_req, res) => {
+  res.status(404).json({ error: { message: "Not found" } });
+});
+
+app.use(errorHandler);
