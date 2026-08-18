@@ -58,6 +58,9 @@
     "statusOverall": "Overall status breakdown",
     "readinessTable": "Indicator readiness",
     "overallReadiness": "Overall readiness",
+    "inProgress": "In progress",
+    "inProgressSub": "Not yet submitted for review",
+    "reviseSub": "Sent back for revision",
     "riskList": "At-risk items",
     "noRisk": "No at-risk items right now",
     "riskReasonRevise": "Has evidence sent back for revision",
@@ -86,6 +89,7 @@
     "viewDetail": "View detail"
   },
   "indicatorDetail": {
+    "title": "Indicator Detail",
     "back": "Back to My Work",
     "evidenceChecklist": "Evidence checklist",
     "attachments": "Attachments",

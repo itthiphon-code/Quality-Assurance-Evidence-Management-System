@@ -1,5 +1,7 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import type { Location } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppLayout } from "./app/AppLayout";
+import { IndicatorDrawerRoute } from "./app/IndicatorDrawerRoute";
 import { ProtectedRoute } from "./app/ProtectedRoute";
 import { RoleRoute } from "./app/RoleRoute";
 import { RootIndexRoute } from "./app/RootIndexRoute";
@@ -11,58 +13,92 @@ import { IndicatorsManagementPage } from "./features/qa/IndicatorsManagementPage
 import { ReviewQueuePage } from "./features/qa/ReviewQueuePage";
 import { UsersManagementPage } from "./features/qa/UsersManagementPage";
 
+interface NavigationState {
+  backgroundLocation?: Location;
+}
+
+// ครอบด้วยคอมโพเนนต์แยกเพราะต้องใช้ useLocation ซึ่งต้องอยู่ใต้ BrowserRouter
+function AppRoutes() {
+  const location = useLocation();
+  // "background location" pattern (react-router v6): เมื่อเปิด /indicators/:id จากการคลิกแถวในรายการ
+  // (ดู MyWorkPage/DashboardPage) เราจะ navigate มาที่เส้นทางนี้พร้อม state.backgroundLocation = หน้าที่เปิดอยู่เดิม
+  // จากนั้น Routes หลักยังคง render หน้าพื้นหลังนั้นต่อไป ส่วน route /indicators/:id ตัวจริงจะ render เป็น
+  // แผงเลื่อน (Drawer) ลอยทับอยู่ด้านบนแทน — แต่ถ้าเข้าเส้นทางนี้ตรง ๆ (ลิงก์ตรง/รีเฟรชหน้า ไม่มี state)
+  // จะ fallback ไปเป็นหน้าเต็มจอ (IndicatorDetailPage) ตามปกติ
+  const backgroundLocation = (location.state as NavigationState | null)?.backgroundLocation;
+
+  return (
+    <>
+      <Routes location={backgroundLocation ?? location}>
+        <Route path="/login" element={<LoginPage />} />
+        {/* "/" ไม่ผ่าน ProtectedRoute อีกต่อไป — index route (RootIndexRoute) เปิดสาธารณะ
+            ส่วนเส้นทางย่อยอื่น ๆ ที่ต้องล็อกอินจะครอบด้วย ProtectedRoute เป็นรายเส้นทางแทน */}
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<RootIndexRoute />} />
+          <Route
+            path="indicators/:id"
+            element={
+              <ProtectedRoute>
+                <IndicatorDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="review-queue"
+            element={
+              <ProtectedRoute>
+                <RoleRoute roles={["qa"]}>
+                  <ReviewQueuePage />
+                </RoleRoute>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="management/users"
+            element={
+              <ProtectedRoute>
+                <RoleRoute roles={["qa"]}>
+                  <UsersManagementPage />
+                </RoleRoute>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="management/indicators"
+            element={
+              <ProtectedRoute>
+                <RoleRoute roles={["qa"]}>
+                  <IndicatorsManagementPage />
+                </RoleRoute>
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {backgroundLocation && (
+        <Routes>
+          <Route
+            path="/indicators/:id"
+            element={
+              <ProtectedRoute>
+                <IndicatorDrawerRoute />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      )}
+    </>
+  );
+}
+
 export function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            {/* "/" ไม่ผ่าน ProtectedRoute อีกต่อไป — index route (RootIndexRoute) เปิดสาธารณะ
-                ส่วนเส้นทางย่อยอื่น ๆ ที่ต้องล็อกอินจะครอบด้วย ProtectedRoute เป็นรายเส้นทางแทน */}
-            <Route path="/" element={<AppLayout />}>
-              <Route index element={<RootIndexRoute />} />
-              <Route
-                path="indicators/:id"
-                element={
-                  <ProtectedRoute>
-                    <IndicatorDetailPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="review-queue"
-                element={
-                  <ProtectedRoute>
-                    <RoleRoute roles={["qa"]}>
-                      <ReviewQueuePage />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="management/users"
-                element={
-                  <ProtectedRoute>
-                    <RoleRoute roles={["qa"]}>
-                      <UsersManagementPage />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="management/indicators"
-                element={
-                  <ProtectedRoute>
-                    <RoleRoute roles={["qa"]}>
-                      <IndicatorsManagementPage />
-                    </RoleRoute>
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <AppRoutes />
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { apiClient } from "../../lib/apiClient";
 import { StatusBadge } from "../../components/StatusBadge";
 
@@ -21,6 +21,11 @@ interface IndicatorListItem {
 export function MyWorkPage() {
   const { t, i18n } = useTranslation();
   const isThai = i18n.language?.startsWith("th");
+  const navigate = useNavigate();
+  const location = useLocation();
+  // เปิดรายละเอียดตัวชี้วัดเป็นแผงเลื่อน (Drawer) แทนการออกจากหน้านี้ — ส่ง state.backgroundLocation
+  // ไปด้วยเพื่อให้ App.tsx คง "หน้างานของฉัน" นี้ไว้เป็นพื้นหลัง (ดูคอมเมนต์ที่ App.tsx)
+  const openIndicator = (id: string) => navigate(`/indicators/${id}`, { state: { backgroundLocation: location } });
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["indicators", "mine"],
@@ -49,15 +54,16 @@ export function MyWorkPage() {
               <ul className="space-y-2">
                 {reviseItems.map(({ indicator, evidence }) => (
                   <li key={evidence.id}>
-                    <Link
-                      to={`/indicators/${indicator.id}`}
-                      className="flex items-center justify-between rounded-lg border-l-4 border-status-danger bg-surface px-3 py-2 text-sm shadow-sm hover:bg-surface-alt"
+                    <button
+                      type="button"
+                      onClick={() => openIndicator(indicator.id)}
+                      className="flex w-full items-center justify-between rounded-lg border-l-4 border-status-danger bg-surface px-3 py-2 text-left text-sm shadow-sm hover:bg-surface-alt"
                     >
                       <span>
                         {indicator.code} — {isThai ? indicator.nameTh : indicator.nameEn}
                       </span>
                       <StatusBadge status={evidence.status} />
-                    </Link>
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -75,9 +81,10 @@ export function MyWorkPage() {
                   const pct = total > 0 ? Math.round((approved / total) * 100) : 0;
                   return (
                     <li key={ind.id}>
-                      <Link
-                        to={`/indicators/${ind.id}`}
-                        className="block rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors hover:bg-surface-alt"
+                      <button
+                        type="button"
+                        onClick={() => openIndicator(ind.id)}
+                        className="block w-full rounded-xl border border-border bg-surface p-4 text-left shadow-sm transition-colors hover:bg-surface-alt"
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-medium text-muted">
@@ -91,7 +98,7 @@ export function MyWorkPage() {
                         <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-surface-alt">
                           <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
                         </div>
-                      </Link>
+                      </button>
                     </li>
                   );
                 })}

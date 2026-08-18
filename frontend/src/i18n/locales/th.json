@@ -58,6 +58,9 @@
     "statusOverall": "สัดส่วนสถานะโดยรวม",
     "readinessTable": "ความพร้อมรายตัวชี้วัด",
     "overallReadiness": "ความพร้อมโดยรวม",
+    "inProgress": "อยู่ระหว่างดำเนินการ",
+    "inProgressSub": "ยังไม่ส่งเข้าตรวจสอบ",
+    "reviseSub": "ถูกส่งกลับให้แก้ไข",
     "riskList": "รายการที่มีความเสี่ยง",
     "noRisk": "ไม่มีรายการที่มีความเสี่ยงในขณะนี้",
     "riskReasonRevise": "มีหลักฐานที่ถูกส่งกลับแก้ไข",
@@ -86,6 +89,7 @@
     "viewDetail": "ดูรายละเอียด"
   },
   "indicatorDetail": {
+    "title": "รายละเอียดตัวชี้วัด",
     "back": "กลับไปหน้างานของฉัน",
     "evidenceChecklist": "รายการหลักฐาน",
     "attachments": "เอกสารแนบ",

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AlertTriangle, Clock3, FileDown, FileSpreadsheet, Loader2, Target } from "lucide-react";
 import { apiClient } from "../lib/apiClient";
 import { downloadFile } from "../lib/downloadFile";
 import { useAuth } from "../features/auth/authContext";
@@ -9,6 +10,8 @@ import { useDashboardSummary } from "../lib/useDashboardSummary";
 import { StatusDonutChart } from "../components/charts/StatusDonutChart";
 import { StandardProgressChart } from "../components/charts/StandardProgressChart";
 import { IndicatorReadinessTable } from "../components/IndicatorReadinessTable";
+import { Card } from "../components/ui/Card";
+import { StatCard } from "../components/ui/StatCard";
 
 interface ReviewQueueItemDto {
   id: string;
@@ -30,24 +33,26 @@ function ReportExportButtons() {
   });
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <button
         type="button"
         disabled={exportPdf.isPending}
         onClick={() => exportPdf.mutate()}
-        className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-surface-alt disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20 disabled:opacity-50"
       >
+        <FileDown className="h-3.5 w-3.5" />
         {exportPdf.isPending ? t("reports.exporting") : t("reports.exportPdf")}
       </button>
       <button
         type="button"
         disabled={exportExcel.isPending}
         onClick={() => exportExcel.mutate()}
-        className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-surface-alt disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20 disabled:opacity-50"
       >
+        <FileSpreadsheet className="h-3.5 w-3.5" />
         {exportExcel.isPending ? t("reports.exporting") : t("reports.exportExcel")}
       </button>
-      {error && <span className="text-xs text-status-danger">{t("reports.exportError")}</span>}
+      {error && <span className="text-xs text-red-200">{t("reports.exportError")}</span>}
     </div>
   );
 }
@@ -56,6 +61,11 @@ function ReportExportButtons() {
 export function DashboardPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  // เปิดรายละเอียดตัวชี้วัดจากตารางความพร้อมเป็นแผงเลื่อน โดยคง Dashboard นี้ไว้เป็นพื้นหลัง
+  // (ดูคอมเมนต์ที่ App.tsx) — ใช้ได้เฉพาะ qa เพราะ backend ปฏิเสธ exec ที่ endpoint นี้
+  const openIndicator = (id: string) => navigate(`/indicators/${id}`, { state: { backgroundLocation: location } });
 
   const { data: reviewQueue } = useQuery({
     queryKey: ["evidence", "review-queue"],
@@ -63,57 +73,74 @@ export function DashboardPage() {
   });
 
   const { data, isLoading, isError } = useDashboardSummary();
+  const pendingCount = reviewQueue?.length ?? 0;
+  const overallPct = data && data.overall.total > 0 ? Math.round((data.overall.approved / data.overall.total) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold text-ink">
-            {t("common.welcome")}, {user?.name}
-          </h1>
-          <p className="mt-1 text-sm text-muted">{t("dashboard.qaWelcome")}</p>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+      <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-primary-800 to-primary-700 p-6 text-white shadow-sm sm:p-7">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold">
+              {t("common.welcome")}, {user?.name}
+            </h1>
+            <p className="mt-1 text-sm text-white/80">{t("dashboard.qaWelcome")}</p>
+          </div>
+          <ReportExportButtons />
         </div>
-        <ReportExportButtons />
       </div>
 
-      <Link
-        to="/review-queue"
-        className="mt-4 flex items-center justify-between rounded-xl border border-border bg-surface p-4 shadow-sm transition-colors hover:bg-surface-alt"
-      >
-        <span className="text-sm font-medium text-ink">{t("dashboard.pendingReview")}</span>
-        <span className="flex items-center gap-2">
-          <span className="rounded-full bg-primary-tint px-2.5 py-0.5 text-sm font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
-            {reviewQueue?.length ?? 0}
-          </span>
-          <span className="text-sm text-primary-700 underline dark:text-primary">{t("dashboard.goToReviewQueue")}</span>
-        </span>
-      </Link>
-
-      {isLoading && <p className="mt-4 text-sm text-muted">{t("common.loading")}</p>}
-      {isError && <p className="mt-4 text-sm text-status-danger">{t("common.error")}</p>}
+      {isLoading && <p className="mt-6 text-sm text-muted">{t("common.loading")}</p>}
+      {isError && <p className="mt-6 text-sm text-status-danger">{t("common.error")}</p>}
 
       {data && (
         <>
-          <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-                {t("dashboard.statusByStandard")}
-              </h2>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              icon={Target}
+              tone="primary"
+              label={t("dashboard.overallReadiness")}
+              value={`${overallPct}%`}
+              sub={`${data.overall.approved}/${data.overall.total} ${t("common.evidenceItems")}`}
+            />
+            <StatCard
+              icon={Clock3}
+              tone="pending"
+              label={t("dashboard.pendingReview")}
+              value={pendingCount}
+              sub={t("dashboard.goToReviewQueue")}
+              onClick={() => navigate("/review-queue")}
+            />
+            <StatCard
+              icon={Loader2}
+              tone="warning"
+              label={t("dashboard.inProgress")}
+              value={data.overall.todo + data.overall.progress}
+              sub={t("dashboard.inProgressSub")}
+            />
+            <StatCard
+              icon={AlertTriangle}
+              tone="danger"
+              label={t("status.revise")}
+              value={data.overall.revise}
+              sub={t("dashboard.reviseSub")}
+            />
+          </div>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <Card title={t("dashboard.statusByStandard")}>
               <StandardProgressChart data={data.byStandard} />
-            </div>
-            <div className="rounded-xl border border-border bg-surface p-4 shadow-sm">
-              <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-                {t("dashboard.statusOverall")}
-              </h2>
+            </Card>
+            <Card title={t("dashboard.statusOverall")}>
               <StatusDonutChart counts={data.overall} />
-            </div>
+            </Card>
           </div>
 
           <section className="mt-6">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
               {t("dashboard.readinessTable")}
             </h2>
-            <IndicatorReadinessTable data={data.byIndicator} />
+            <IndicatorReadinessTable data={data.byIndicator} onRowClick={openIndicator} />
           </section>
         </>
       )}
