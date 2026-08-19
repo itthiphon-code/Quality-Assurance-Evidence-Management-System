@@ -128,7 +128,10 @@ model Attachment {
   evidenceId   String
   evidence     EvidenceItem   @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
   type         AttachmentType
-  filename     String
+  filename     String // ชื่อไฟล์จริงที่อัปโหลดมา — ใช้คงนามสกุลไว้ตอนดาวน์โหลด
+  // ชื่อเอกสารที่ผู้ใช้ตั้งเองเพื่อแสดงในระบบ เช่น "ภาพกิจกรรมปฐมนิเทศ" แทน "IMG_20240315.jpg"
+  // null = ยังไม่ได้ตั้ง ให้แสดงชื่อไฟล์แทน
+  title        String?
   url          String // storage key (type=file) หรือ Google Drive URL (type=drive_link)
   size         Int? // bytes, เฉพาะ type=file
   uploadedById String

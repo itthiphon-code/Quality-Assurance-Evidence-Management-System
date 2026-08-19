@@ -46,7 +46,8 @@
     "attachmentDeleted": "ลบเอกสารแนบแล้ว",
     "failed": "ดำเนินการไม่สำเร็จ",
     "attachmentsAdded": "แนบเอกสาร {{n}} รายการเรียบร้อยแล้ว",
-    "statusChanged": "เปลี่ยนสถานะเรียบร้อยแล้ว"
+    "statusChanged": "เปลี่ยนสถานะเรียบร้อยแล้ว",
+    "attachmentRenamed": "ตั้งชื่อเอกสารเรียบร้อยแล้ว"
   },
   "theme": {
     "light": "โหมดสว่าง",
@@ -152,7 +153,9 @@
     "multiFileHint": "เลือกได้หลายไฟล์พร้อมกัน (สูงสุดไฟล์ละ 50MB)",
     "uploadingProgress": "กำลังอัปโหลด {{current}}/{{total}}...",
     "uploadPartialFailed": "อัปโหลดไม่สำเร็จ {{n}} ไฟล์",
-    "changeStatus": "เปลี่ยนสถานะ:"
+    "changeStatus": "เปลี่ยนสถานะ:",
+    "renameAttachment": "ตั้งชื่อเอกสาร",
+    "attachmentTitlePlaceholder": "ชื่อเอกสารที่จะแสดง"
   },
   "reviewQueue": {
     "title": "คิวตรวจสอบ",

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../../db/prisma";
 import { logAudit } from "../../middleware/audit";
 import { streamAttachment } from "../../storage/streamAttachment";
+import { buildDownloadName } from "../../storage/downloadName";
 import { computeDashboardSummary } from "../dashboard/dashboard.service";
 import { getApprovedFolder } from "./public.service";
 
@@ -52,7 +53,7 @@ publicRouter.get("/attachments/:id/download", async (req, res, next) => {
     // เปิดตรงจากแท็บใหม่ได้เลย จึงพาไป Google Drive ด้วย redirect แทนการคืน JSON
     if (attachment.type === "drive_link") return res.redirect(attachment.url);
 
-    await streamAttachment(res, attachment.url, attachment.filename);
+    await streamAttachment(res, attachment.url, buildDownloadName(attachment.filename, attachment.title));
   } catch (err) {
     next(err);
   }

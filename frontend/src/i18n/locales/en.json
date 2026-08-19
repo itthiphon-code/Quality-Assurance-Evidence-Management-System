@@ -46,7 +46,8 @@
     "attachmentDeleted": "Attachment deleted",
     "failed": "Action failed",
     "attachmentsAdded": "{{n}} attachment(s) added",
-    "statusChanged": "Status updated"
+    "statusChanged": "Status updated",
+    "attachmentRenamed": "Document renamed"
   },
   "theme": {
     "light": "Light mode",
@@ -152,7 +153,9 @@
     "multiFileHint": "You can select several files at once (max 50MB each)",
     "uploadingProgress": "Uploading {{current}}/{{total}}...",
     "uploadPartialFailed": "{{n}} file(s) failed to upload",
-    "changeStatus": "Change status:"
+    "changeStatus": "Change status:",
+    "renameAttachment": "Rename document",
+    "attachmentTitlePlaceholder": "Display name for this document"
   },
   "reviewQueue": {
     "title": "Review Queue",

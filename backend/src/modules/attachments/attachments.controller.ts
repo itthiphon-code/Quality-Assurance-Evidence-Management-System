@@ -5,6 +5,7 @@ import { env } from "../../config/env";
 import { authMiddleware } from "../../middleware/auth";
 import { logAudit } from "../../middleware/audit";
 import { streamAttachment } from "../../storage/streamAttachment";
+import { buildDownloadName } from "../../storage/downloadName";
 import { verifyAccessToken } from "../auth/auth.service";
 import { canAccessEvidence } from "../evidence/evidence.service";
 
@@ -102,7 +103,7 @@ attachmentsRouter.get("/:id/download", async (req, res, next) => {
     // ลิงก์ Google Drive ไม่ใช่ไฟล์ในระบบ — พาไปที่ Drive โดยตรง
     if (attachment.type === "drive_link") return res.redirect(attachment.url);
 
-    await streamAttachment(res, attachment.url, attachment.filename);
+    await streamAttachment(res, attachment.url, buildDownloadName(attachment.filename, attachment.title));
   } catch (err) {
     next(err);
   }

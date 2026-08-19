@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { AttachmentIcon } from "./AttachmentIcon";
@@ -13,6 +14,7 @@ interface AttachmentDto {
   id: string;
   type: "file" | "drive_link";
   filename: string;
+  title: string | null;
   size: number | null;
   uploadedAt: string;
   uploadedBy?: { name: string };
@@ -51,6 +53,107 @@ interface IndicatorDetailDto {
 }
 
 const EVIDENCE_STATUSES = ["todo", "progress", "review", "approved", "revise"] as const;
+
+// แถวเอกสารแนบ 1 รายการ — แสดง "ชื่อเอกสาร" ที่ผู้ใช้ตั้งไว้ ถ้ายังไม่ได้ตั้งจึงแสดงชื่อไฟล์แทน
+// และให้แก้ชื่อได้ในแถวเดียวกันโดยไม่ต้องเปิดหน้าต่างซ้อน
+function AttachmentRow({
+  evidenceId,
+  attachment,
+  canEdit,
+  onChanged,
+  onDelete,
+}: {
+  evidenceId: string;
+  attachment: AttachmentDto;
+  canEdit: boolean;
+  onChanged: () => void;
+  onDelete: () => void;
+}) {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(attachment.title ?? "");
+
+  const rename = useMutation({
+    mutationFn: () => apiClient.patch(`/evidence/${evidenceId}/attachments/${attachment.id}`, { title: draft }),
+    onSuccess: () => {
+      setEditing(false);
+      onChanged();
+      toast.success(t("toast.attachmentRenamed"));
+    },
+    onError: () => toast.error(t("toast.failed")),
+  });
+
+  const displayName = attachment.title?.trim() || attachment.filename;
+
+  if (editing) {
+    return (
+      <li className="rounded-md bg-surface-alt px-3 py-2">
+        <input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") rename.mutate();
+            if (e.key === "Escape") setEditing(false);
+          }}
+          placeholder={t("indicatorDetail.attachmentTitlePlaceholder")}
+          className="w-full rounded-md border border-border bg-base px-2 py-1.5 text-xs outline-none focus:border-primary"
+        />
+        {/* ชื่อไฟล์จริงยังแสดงไว้ให้เห็นว่ากำลังตั้งชื่อให้ไฟล์ไหน */}
+        <p className="mt-1 truncate text-[11px] text-muted">{attachment.filename}</p>
+        <div className="mt-2 flex justify-end gap-2">
+          <button type="button" onClick={() => setEditing(false)} className="text-xs text-muted">
+            {t("common.cancel")}
+          </button>
+          <button
+            type="button"
+            disabled={rename.isPending}
+            onClick={() => rename.mutate()}
+            className="rounded-md bg-primary px-3 py-1 text-xs font-medium text-primary-tint hover:bg-primary-700 disabled:opacity-50"
+          >
+            {t("common.save")}
+          </button>
+        </div>
+      </li>
+    );
+  }
+
+  return (
+    <li className="flex items-center justify-between rounded-md bg-surface-alt px-3 py-1.5 text-xs">
+      <span className="flex min-w-0 items-center gap-1.5">
+        <AttachmentIcon type={attachment.type} />
+        <span className="truncate">{displayName}</span>
+      </span>
+      <span className="flex shrink-0 gap-2">
+        <button
+          type="button"
+          onClick={() => openAttachment(attachment.id)}
+          className="text-primary-700 underline dark:text-primary"
+        >
+          {t("indicatorDetail.open")}
+        </button>
+        {canEdit && (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setDraft(attachment.title ?? "");
+                setEditing(true);
+              }}
+              className="text-muted underline hover:text-ink"
+            >
+              {t("indicatorDetail.renameAttachment")}
+            </button>
+            <button type="button" onClick={onDelete} className="text-status-danger underline">
+              {t("indicatorDetail.delete")}
+            </button>
+          </>
+        )}
+      </span>
+    </li>
+  );
+}
 
 function EvidenceItemCard({ indicatorId, evidence }: { indicatorId: string; evidence: EvidenceItemDto }) {
   const { t, i18n } = useTranslation();
@@ -112,26 +215,14 @@ function EvidenceItemCard({ indicatorId, evidence }: { indicatorId: string; evid
       {evidence.attachments.length > 0 && (
         <ul className="mt-3 space-y-1.5">
           {evidence.attachments.map((att) => (
-            <li key={att.id} className="flex items-center justify-between rounded-md bg-surface-alt px-3 py-1.5 text-xs">
-              <span className="flex min-w-0 items-center gap-1.5">
-                <AttachmentIcon type={att.type} />
-                <span className="truncate">{att.filename}</span>
-              </span>
-              <span className="flex shrink-0 gap-2">
-                <button type="button" onClick={() => openAttachment(att.id)} className="text-primary-700 underline dark:text-primary">
-                  {t("indicatorDetail.open")}
-                </button>
-                {canEdit && (
-                  <button
-                    type="button"
-                    onClick={() => deleteAttachment.mutate(att.id)}
-                    className="text-status-danger underline"
-                  >
-                    {t("indicatorDetail.delete")}
-                  </button>
-                )}
-              </span>
-            </li>
+            <AttachmentRow
+              key={att.id}
+              evidenceId={evidence.id}
+              attachment={att}
+              canEdit={canEdit}
+              onChanged={refresh}
+              onDelete={() => deleteAttachment.mutate(att.id)}
+            />
           ))}
         </ul>
       )}

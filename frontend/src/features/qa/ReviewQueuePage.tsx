@@ -11,6 +11,7 @@ interface AttachmentDto {
   id: string;
   type: "file" | "drive_link";
   filename: string;
+  title: string | null;
   uploadedBy?: { name: string };
 }
 
@@ -62,7 +63,7 @@ function ReviewQueueRow({ item }: { item: ReviewQueueItemDto }) {
             <span className="flex min-w-0 items-center gap-1.5">
               <AttachmentIcon type={att.type} />
               <span className="truncate">
-                {att.filename}
+                {att.title?.trim() || att.filename}
                 {att.uploadedBy && (
                   <span className="text-muted">
                     {" "}

@@ -20,6 +20,7 @@ interface AttachmentSummary {
   id: string;
   type: "file" | "drive_link";
   filename: string;
+  title: string | null;
 }
 
 interface EvidenceItemSummary {
@@ -200,7 +201,7 @@ export function PublicFolderPage() {
                                 <li key={att.id} className="flex items-center justify-between gap-2 text-xs">
                                   <span className="flex min-w-0 items-center gap-1.5">
                                     <AttachmentIcon type={att.type} />
-                                    <span className="truncate">{att.filename}</span>
+                                    <span className="truncate">{att.title?.trim() || att.filename}</span>
                                   </span>
                                   <button
                                     type="button"

@@ -136,6 +136,47 @@ evidenceRouter.post("/:id/attachments", upload.single("file"), async (req, res, 
   }
 });
 
+const renameAttachmentSchema = z.object({
+  // สตริงว่าง = ล้างชื่อที่ตั้งไว้ กลับไปแสดงชื่อไฟล์เดิม
+  title: z.string().max(200),
+});
+
+// PATCH /api/evidence/:id/attachments/:attachmentId — ตั้งชื่อเอกสารที่จะแสดงในระบบ
+// เก็บแยกจาก filename (ชื่อไฟล์จริง) เพื่อให้ตั้งชื่อสื่อความหมายได้โดยไม่เสียนามสกุลตอนดาวน์โหลด
+evidenceRouter.patch("/:id/attachments/:attachmentId", async (req, res, next) => {
+  try {
+    const { title } = renameAttachmentSchema.parse(req.body);
+
+    const evidence = await loadEvidenceWithIndicator(req.params.id);
+    if (!evidence) return res.status(404).json({ error: { message: "Evidence not found" } });
+
+    const allowed = await canAccessEvidence(req.user!.sub, req.user!.role, evidence.indicatorId);
+    if (!allowed) return res.status(403).json({ error: { message: "Forbidden" } });
+
+    const attachment = await prisma.attachment.findUnique({ where: { id: req.params.attachmentId } });
+    if (!attachment || attachment.evidenceId !== evidence.id) {
+      return res.status(404).json({ error: { message: "Attachment not found" } });
+    }
+
+    const updated = await prisma.attachment.update({
+      where: { id: attachment.id },
+      data: { title: title.trim() || null },
+    });
+
+    await logAudit({
+      userId: req.user!.sub,
+      action: "rename_attachment",
+      entityType: "Attachment",
+      entityId: attachment.id,
+      meta: { evidenceId: evidence.id, title: updated.title },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // DELETE /api/evidence/:id/attachments/:attachmentId
 evidenceRouter.delete("/:id/attachments/:attachmentId", async (req, res, next) => {
   try {
