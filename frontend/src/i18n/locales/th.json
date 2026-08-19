@@ -155,7 +155,9 @@
     "uploadPartialFailed": "อัปโหลดไม่สำเร็จ {{n}} ไฟล์",
     "changeStatus": "เปลี่ยนสถานะ:",
     "renameAttachment": "ตั้งชื่อเอกสาร",
-    "attachmentTitlePlaceholder": "ชื่อเอกสารที่จะแสดง"
+    "attachmentTitlePlaceholder": "ชื่อเอกสารที่จะแสดง",
+    "deleteAttachmentTitle": "ลบเอกสารแนบ",
+    "deleteAttachmentConfirm": "ต้องการลบเอกสารนี้ออกจากระบบใช่หรือไม่ ไฟล์จะถูกลบถาวรและกู้คืนไม่ได้"
   },
   "reviewQueue": {
     "title": "คิวตรวจสอบ",

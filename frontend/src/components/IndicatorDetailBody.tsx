@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { AttachmentIcon } from "./AttachmentIcon";
 import { Skeleton } from "./ui/Skeleton";
+import { ConfirmDialog } from "./ui/ConfirmDialog";
 import { useToast } from "./ui/ToastProvider";
 import { AttachmentUploader } from "./AttachmentUploader";
 import { StatusBadge } from "./StatusBadge";
@@ -72,6 +73,7 @@ function AttachmentRow({
   const { t } = useTranslation();
   const toast = useToast();
   const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [draft, setDraft] = useState(attachment.title ?? "");
 
   const rename = useMutation({
@@ -145,9 +147,27 @@ function AttachmentRow({
             >
               {t("indicatorDetail.renameAttachment")}
             </button>
-            <button type="button" onClick={onDelete} className="text-status-danger underline">
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              className="text-status-danger underline"
+            >
               {t("indicatorDetail.delete")}
             </button>
+            {/* ลบเอกสารแล้วกู้คืนไม่ได้ (ไฟล์ถูกลบออกจากที่เก็บด้วย) จึงต้องยืนยันก่อนเสมอ */}
+            {confirmingDelete && (
+              <ConfirmDialog
+                tone="danger"
+                title={t("indicatorDetail.deleteAttachmentTitle")}
+                message={`${displayName} — ${t("indicatorDetail.deleteAttachmentConfirm")}`}
+                confirmLabel={t("indicatorDetail.delete")}
+                onConfirm={() => {
+                  setConfirmingDelete(false);
+                  onDelete();
+                }}
+                onCancel={() => setConfirmingDelete(false)}
+              />
+            )}
           </>
         )}
       </span>

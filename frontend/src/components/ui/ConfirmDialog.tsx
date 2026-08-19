@@ -25,13 +25,18 @@ export function ConfirmDialog({
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
+      if (e.key !== "Escape") return;
+      // กล่องนี้มักเปิดซ้อนอยู่บนแผงเลื่อน (IndicatorDrawer) ซึ่งดัก Escape ที่ window เหมือนกัน
+      // ถ้าไม่หยุดการส่งต่อ กด Escape ครั้งเดียวจะปิดทั้งกล่องยืนยันและแผงเลื่อนพร้อมกัน
+      // จับในช่วง capture เพื่อให้ทำงานก่อน listener ของแผงเลื่อนที่อยู่ช่วง bubble
+      e.stopPropagation();
+      onCancel();
     };
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKeyDown, true);
     const original = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", onKeyDown, true);
       document.body.style.overflow = original;
     };
   }, [onCancel]);

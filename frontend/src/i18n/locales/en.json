@@ -155,7 +155,9 @@
     "uploadPartialFailed": "{{n}} file(s) failed to upload",
     "changeStatus": "Change status:",
     "renameAttachment": "Rename document",
-    "attachmentTitlePlaceholder": "Display name for this document"
+    "attachmentTitlePlaceholder": "Display name for this document",
+    "deleteAttachmentTitle": "Delete attachment",
+    "deleteAttachmentConfirm": "Delete this document? The file is removed permanently and cannot be recovered."
   },
   "reviewQueue": {
     "title": "Review Queue",
