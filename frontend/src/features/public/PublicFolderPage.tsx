@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -12,6 +13,7 @@ import { IndicatorReadinessGrid } from "../../components/IndicatorReadinessGrid"
 import { AttachmentIcon } from "../../components/AttachmentIcon";
 import { Card } from "../../components/ui/Card";
 import { StatCard } from "../../components/ui/StatCard";
+import { StandardTabs } from "../../components/ui/StandardTabs";
 import { DashboardSkeleton } from "../../components/ui/Skeleton";
 
 interface AttachmentSummary {
@@ -65,6 +67,11 @@ export function PublicFolderPage() {
   const readinessPct =
     summary && summary.overall.total > 0 ? Math.round((summary.overall.approved / summary.overall.total) * 100) : 0;
   const readyCount = (summary?.byIndicator ?? []).filter((ind) => ind.pctComplete === 100).length;
+
+  const folder = folderQuery.data ?? [];
+  const [activeStandardId, setActiveStandardId] = useState<string | null>(null);
+  // ยึดมาตรฐานแรกเป็นค่าตั้งต้น และเผื่อกรณี id ที่เลือกไว้ไม่มีอยู่แล้ว (ข้อมูลเปลี่ยนระหว่างเปิดหน้า)
+  const activeStandard = folder.find((s) => s.id === activeStandardId) ?? folder[0];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
@@ -143,14 +150,26 @@ export function PublicFolderPage() {
 
       <section className="mt-8">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">{t("public.folderTitle")}</h2>
-        <div className="space-y-6">
-          {folderQuery.data?.map((standard) => (
-            <section key={standard.id}>
-              <h3 className="mb-3 font-semibold text-primary-700 dark:text-primary">
-                {standard.code} — {isThai ? standard.nameTh : standard.nameEn}
-              </h3>
+
+        {folder.length > 0 && (
+          <StandardTabs
+            items={folder.map((s) => ({
+              id: s.id,
+              code: s.code,
+              nameTh: s.nameTh,
+              nameEn: s.nameEn,
+              indicatorCount: s.indicators.length,
+            }))}
+            activeId={activeStandard.id}
+            onChange={setActiveStandardId}
+          />
+        )}
+
+        <div className="mt-4 space-y-6">
+          {folder.length > 0 && (
+            <section key={activeStandard.id}>
               <div className="space-y-3">
-                {standard.indicators.map((ind) => (
+                {activeStandard.indicators.map((ind) => (
                   <div key={ind.id} className="rounded-2xl border border-border bg-surface p-4 shadow-sm sm:p-5">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="inline-flex rounded-md bg-primary-tint px-2 py-0.5 text-xs font-semibold text-primary-700 dark:bg-surface-alt dark:text-primary">
@@ -201,7 +220,7 @@ export function PublicFolderPage() {
                 ))}
               </div>
             </section>
-          ))}
+          )}
         </div>
       </section>
     </div>
