@@ -1,35 +1,40 @@
 import { apiClient } from "./apiClient";
 
-// ปล่อย object URL ทิ้งหลังเปิดแท็บไปแล้วสักพัก ไม่งั้นไฟล์จะค้างในหน่วยความจำจนกว่าจะปิดหน้า
-const OBJECT_URL_TTL_MS = 60_000;
+function apiUrl(path: string): string {
+  const base = apiClient.defaults.baseURL ?? "/api";
+  return `${base.replace(/\/$/, "")}${path}`;
+}
 
 // เปิดไฟล์แนบในแท็บใหม่ — endpoint จะบันทึก Audit Log การเปิดดูให้ทุกครั้ง
 //
-// backend ตอบได้ 2 แบบ:
-//   - ไฟล์ในระบบ  -> ส่งตัวไฟล์มาเลย (สตรีมผ่าน backend ไม่ใช้ presigned URL เพราะ URL นั้น
-//                    ถูกเซ็นด้วยที่อยู่ภายใน Docker ซึ่งเบราว์เซอร์ผู้ใช้เข้าไม่ถึง)
-//   - ลิงก์ Drive -> ตอบเป็น JSON { url } ให้พาไปเปิดที่ Google Drive
-// จึงต้องรับเป็น blob แล้วดูจากชนิดข้อมูลว่าเป็นกรณีไหน
-async function openFromEndpoint(path: string) {
-  const res = await apiClient.get(path, { responseType: "blob" });
-  const blob = res.data as Blob;
+// ทั้งสองฟังก์ชันต้องพาแท็บไปยัง "URL ปกติ" ไม่ใช่ blob: URL
+// เพราะเบราว์เซอร์ (Chromium) บล็อกการพาแท็บที่เปิดใหม่ไปยัง blob: URL แท็บจะค้างอยู่ที่ about:blank
 
-  if (blob.type.includes("application/json")) {
-    const { url } = JSON.parse(await blob.text()) as { url: string };
-    window.open(url, "_blank", "noopener,noreferrer");
-    return;
-  }
-
-  const objectUrl = URL.createObjectURL(blob);
-  window.open(objectUrl, "_blank", "noopener,noreferrer");
-  window.setTimeout(() => URL.revokeObjectURL(objectUrl), OBJECT_URL_TTL_MS);
-}
-
-export function openAttachment(attachmentId: string) {
-  return openFromEndpoint(`/attachments/${attachmentId}/download`);
-}
-
-// เหมือน openAttachment แต่ใช้ endpoint สาธารณะ (ไม่ต้องล็อกอิน) สำหรับหน้าแฟ้มตรวจเยี่ยมสาธารณะ
+// หน้าแฟ้มสาธารณะไม่ต้องล็อกอิน จึงเปิดได้ทันทีในจังหวะคลิก ไม่ต้องรออะไรก่อน
+// (ปลอดภัยที่สุดจากการถูกบล็อกป๊อปอัป เพราะไม่มี await คั่น)
 export function openPublicAttachment(attachmentId: string) {
-  return openFromEndpoint(`/public/attachments/${attachmentId}/download`);
+  window.open(apiUrl(`/public/attachments/${attachmentId}/download`), "_blank", "noopener,noreferrer");
+}
+
+// เส้นทางที่ต้องล็อกอิน: แท็บใหม่แนบ Authorization header ไปเองไม่ได้
+// จึงขอ "ตั๋วอายุสั้น" (1 นาที ผูกกับไฟล์ใบเดียว) มาใส่ใน URL แทน
+export async function openAttachment(attachmentId: string) {
+  // เปิดแท็บทันทีในจังหวะที่ผู้ใช้คลิก ก่อนจะ await ขอตั๋ว
+  // ถ้าเปิดหลัง await เบราว์เซอร์จะถือว่าไม่ได้เกิดจากการกระทำของผู้ใช้แล้วบล็อกป๊อปอัปทิ้ง
+  const tab = window.open("", "_blank");
+
+  try {
+    const res = await apiClient.post<{ token: string }>(`/attachments/${attachmentId}/download-token`);
+    const url = apiUrl(`/attachments/${attachmentId}/download?t=${encodeURIComponent(res.data.token)}`);
+    if (tab && !tab.closed) {
+      tab.opener = null;
+      tab.location.href = url;
+    } else {
+      // ป๊อปอัปถูกบล็อกตั้งแต่แรก — เปิดอีกครั้งเผื่อผู้ใช้อนุญาตไว้แล้ว
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  } catch (err) {
+    tab?.close();
+    throw err;
+  }
 }

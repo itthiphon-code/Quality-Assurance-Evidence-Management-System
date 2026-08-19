@@ -49,7 +49,8 @@ publicRouter.get("/attachments/:id/download", async (req, res, next) => {
       meta: { evidenceId: attachment.evidenceId, public: true },
     });
 
-    if (attachment.type === "drive_link") return res.json({ url: attachment.url });
+    // เปิดตรงจากแท็บใหม่ได้เลย จึงพาไป Google Drive ด้วย redirect แทนการคืน JSON
+    if (attachment.type === "drive_link") return res.redirect(attachment.url);
 
     await streamAttachment(res, attachment.url, attachment.filename);
   } catch (err) {
