@@ -16,3 +16,6 @@ backend/prisma/dev.db
 # Editor
 .vscode/
 .idea/
+
+# เอกสารภายในสำหรับผู้พัฒนา/ผู้ช่วย AI — ไม่เผยแพร่ต่อสาธารณะ
+CLAUDE.md
