@@ -26,6 +26,7 @@ export function StandardTabs({ items, activeId, onChange }: StandardTabsProps) {
     <div role="tablist" aria-label={t("public.folderTitle")} className="flex gap-2 overflow-x-auto pb-1">
       {items.map((item) => {
         const accent = getStandardAccent(item.code);
+        const Icon = accent.icon;
         const active = item.id === activeId;
         return (
           <button
@@ -34,14 +35,17 @@ export function StandardTabs({ items, activeId, onChange }: StandardTabsProps) {
             role="tab"
             aria-selected={active}
             onClick={() => onChange(item.id)}
-            className={`flex min-w-0 shrink-0 items-center gap-2 rounded-xl border px-4 py-2.5 text-left transition-colors ${
+            className={`flex min-w-0 shrink-0 items-center gap-2.5 rounded-xl border px-4 py-2.5 text-left transition-colors ${
               active
                 ? "border-transparent bg-surface shadow-sm ring-2 ring-primary/40"
                 : "border-border bg-surface/60 hover:bg-surface"
             }`}
           >
-            <span className={`inline-flex shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${accent.chip}`}>
-              {item.code}
+            {/* แทนข้อความ "STD1" ด้วยสัญลักษณ์ประจำมาตรฐาน — คงรหัสไว้ให้โปรแกรมอ่านหน้าจอ
+                ประกาศได้ ไม่เช่นนั้นผู้ใช้ที่มองไม่เห็นจะไม่รู้ว่ากำลังเลือกมาตรฐานใด */}
+            <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${accent.chip}`}>
+              <Icon className="h-5 w-5" aria-hidden />
+              <span className="sr-only">{item.code}</span>
             </span>
             <span className="min-w-0">
               <span

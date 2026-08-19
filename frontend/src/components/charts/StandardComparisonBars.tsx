@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { getStandardAccent } from "../../lib/standardColor";
 
 interface StandardComparisonItem {
   standardId: string;
@@ -24,8 +25,14 @@ export function StandardComparisonBars({ data }: { data: StandardComparisonItem[
         return (
           <div key={std.standardId}>
             <div className="mb-1.5 flex items-center justify-between gap-2 text-sm">
-              <span className="font-medium text-ink">
-                {std.code} · {isThai ? std.nameTh : std.nameEn}
+              <span className="flex min-w-0 items-center gap-2 font-medium text-ink">
+                {(() => {
+                  const Icon = getStandardAccent(std.code).icon;
+                  return <Icon className="h-4 w-4 shrink-0 text-muted" aria-hidden />;
+                })()}
+                {/* คงรหัสมาตรฐานไว้สำหรับโปรแกรมอ่านหน้าจอ แม้จะแทนด้วยสัญลักษณ์บนหน้าจอแล้ว */}
+                <span className="sr-only">{std.code}</span>
+                <span className="truncate">{isThai ? std.nameTh : std.nameEn}</span>
               </span>
               <span className="shrink-0 text-xs font-semibold text-muted">
                 {std.approved}/{std.total} ({pct}%)
