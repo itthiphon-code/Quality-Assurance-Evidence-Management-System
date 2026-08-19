@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../../db/prisma";
 import { logAudit } from "../../middleware/audit";
-import { getPresignedDownloadUrl } from "../../storage/s3Client";
+import { streamAttachment } from "../../storage/streamAttachment";
 import { computeDashboardSummary } from "../dashboard/dashboard.service";
 import { getApprovedFolder } from "./public.service";
 
@@ -41,8 +41,6 @@ publicRouter.get("/attachments/:id/download", async (req, res, next) => {
       return res.status(404).json({ error: { message: "Attachment not found" } });
     }
 
-    const url = attachment.type === "file" ? await getPresignedDownloadUrl(attachment.url) : attachment.url;
-
     await logAudit({
       userId: null,
       action: "view",
@@ -51,7 +49,9 @@ publicRouter.get("/attachments/:id/download", async (req, res, next) => {
       meta: { evidenceId: attachment.evidenceId, public: true },
     });
 
-    res.json({ url });
+    if (attachment.type === "drive_link") return res.json({ url: attachment.url });
+
+    await streamAttachment(res, attachment.url, attachment.filename);
   } catch (err) {
     next(err);
   }

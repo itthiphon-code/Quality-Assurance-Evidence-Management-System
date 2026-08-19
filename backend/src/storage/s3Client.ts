@@ -8,6 +8,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "node:crypto";
+import type { Readable } from "node:stream";
 import { env } from "../config/env";
 
 // ตัวเชื่อมต่อ MinIO (S3-compatible) — ใช้จัดเก็บไฟล์หลักฐานตั้งแต่ Phase 2
@@ -59,4 +60,23 @@ export async function getPresignedDownloadUrl(
 ): Promise<string> {
   const command = new GetObjectCommand({ Bucket: EVIDENCE_BUCKET, Key: key });
   return getSignedUrl(s3Client, command, { expiresIn: expiresInSeconds });
+}
+
+export interface StoredObject {
+  body: Readable;
+  contentType: string;
+  contentLength?: number;
+}
+
+// อ่านไฟล์จาก MinIO เป็นสตรีมเพื่อส่งต่อให้ผู้ใช้ผ่าน backend
+// ไม่ใช้ presigned URL ให้เบราว์เซอร์ไปดึงเอง เพราะ URL จะถูกเซ็นด้วยที่อยู่ภายใน Docker
+// (เช่น http://minio:9000) ซึ่งเครื่องผู้ใช้ resolve ไม่ได้ — และการส่งผ่าน backend
+// ยังทำให้ทุกการเปิดไฟล์ผ่านการตรวจสิทธิ์และถูกบันทึก audit log จริง ๆ ทุกครั้ง
+export async function getObjectStream(key: string): Promise<StoredObject> {
+  const res = await s3Client.send(new GetObjectCommand({ Bucket: EVIDENCE_BUCKET, Key: key }));
+  return {
+    body: res.Body as Readable,
+    contentType: res.ContentType ?? "application/octet-stream",
+    contentLength: res.ContentLength,
+  };
 }
