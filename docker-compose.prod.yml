@@ -52,6 +52,8 @@ services:
       JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
       CORS_ORIGIN: ${CORS_ORIGIN}
+      # 2 ชั้น: nginx-proxy-manager -> nginx ของ frontend (ดู backend/src/app.ts)
+      TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS:-2}
       PRESIGNED_URL_EXPIRES_SECONDS: ${PRESIGNED_URL_EXPIRES_SECONDS:-600}
       MINIO_ENDPOINT: minio
       MINIO_API_PORT: 9000

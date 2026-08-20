@@ -13,6 +13,9 @@ export const env = {
   port: Number(process.env.PORT ?? 4000),
   databaseUrl: required("DATABASE_URL"),
   corsOrigin: process.env.CORS_ORIGIN ?? "http://localhost:5173",
+  // จำนวนชั้นพร็อกซีที่อยู่หน้า backend และเชื่อถือได้ (ดูคำอธิบายที่ app.ts)
+  // dev: เรียกตรงไม่ผ่านพร็อกซี = 0 | production: nginx-proxy-manager + nginx ของ frontend = 2
+  trustProxyHops: Number(process.env.TRUST_PROXY_HOPS ?? 0),
 
   jwtAccessSecret: required("JWT_ACCESS_SECRET"),
   jwtRefreshSecret: required("JWT_REFRESH_SECRET"),

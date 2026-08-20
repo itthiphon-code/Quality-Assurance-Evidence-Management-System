@@ -18,6 +18,13 @@ import { apiLimiter } from "./middleware/rateLimit";
 
 export const app = express();
 
+// บน production คำขอผ่านพร็อกซี 2 ชั้น: nginx-proxy-manager -> nginx ของ frontend -> backend
+// ทั้งสองชั้นเติม X-Forwarded-For ไว้ ถ้าไม่บอก Express ให้เชื่อพร็อกซี req.ip จะเป็น IP ของพร็อกซี
+// ไม่ใช่ของผู้ใช้จริง ทำให้ทุกคนถูกนับรวมเป็นคนเดียวกันในการจำกัดจำนวนคำขอ
+// (ผู้ใช้คนเดียวกรอกรหัสผิด 5 ครั้ง จะล็อกไม่ให้ทั้งวิทยาลัยเข้าสู่ระบบ)
+// ตั้งเป็นจำนวนชั้นพร็อกซีที่เชื่อถือได้ ไม่ใช่ true เพราะ true จะเชื่อ X-Forwarded-For ที่ผู้ใช้ปลอมมาเองด้วย
+app.set("trust proxy", env.trustProxyHops);
+
 app.use(helmet());
 app.use(cors({ origin: env.corsOrigin, credentials: true }));
 app.use(express.json());
