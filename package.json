@@ -1,8 +1,8 @@
 {
   "name": "qa-ems",
   "private": true,
-  "version": "0.1.0",
-  "description": "Quality-Assurance Evidence Management System — วิทยาลัยเทคนิคอุบลราชธานี",
+  "version": "0.15.0",
+  "description": "Quality-Assurance Evidence Management System \u2014 \u0e27\u0e34\u0e17\u0e22\u0e32\u0e25\u0e31\u0e22\u0e40\u0e17\u0e04\u0e19\u0e34\u0e04\u0e2d\u0e38\u0e1a\u0e25\u0e23\u0e32\u0e0a\u0e18\u0e32\u0e19\u0e35",
   "workspaces": [
     "backend",
     "frontend"

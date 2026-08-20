@@ -1,7 +1,7 @@
 {
   "name": "qa-ems-backend",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.15.0",
   "type": "commonjs",
   "main": "dist/server.js",
   "scripts": {
