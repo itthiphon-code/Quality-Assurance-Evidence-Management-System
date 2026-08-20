@@ -259,5 +259,10 @@
       "update_indicator": "Updated indicator",
       "status_override": "Changed evidence status"
     }
+  },
+  "footer": {
+    "affiliation": "Department of Computer Technology, Ubon Ratchathani Technical College.",
+    "rights": "All rights reserved.",
+    "version": "Version {{version}}"
   }
 }

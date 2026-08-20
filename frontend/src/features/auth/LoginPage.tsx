@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { ShieldCheck } from "lucide-react";
+import { Footer } from "../../components/Footer";
 import { LangToggle } from "../../components/LangToggle";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { useAuth } from "./authContext";
@@ -36,7 +37,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-base px-4 py-10 text-ink">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-base text-ink">
       {/* แสงไล่สีแบรนด์จาง ๆ ด้านหลังการ์ด — ใช้เฉพาะ --primary เพื่อไม่หลุดโทนสี */}
       <div
         aria-hidden
@@ -59,7 +60,7 @@ export function LoginPage() {
         <ThemeToggle />
       </div>
 
-      <div className="relative z-0 grid w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-surface shadow-lg md:grid-cols-2">
+      <div className="relative z-0 mx-auto my-auto grid w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-surface shadow-lg md:grid-cols-2">
         <div className="hidden flex-col justify-between bg-gradient-to-br from-primary-800 to-primary-700 p-9 text-white md:flex">
           <div>
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
@@ -120,6 +121,8 @@ export function LoginPage() {
           </form>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }
